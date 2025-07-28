@@ -47,15 +47,15 @@ export default function Header() {
 
   const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
-      <Link to="/" className="text-gray-900 hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Home</Link>
-      <Link to="/about" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">About</Link>
+      <Link to="/" className="text-black transition-all duration-200 ease-in-out hover:underline active:underline underline-offset-4 decoration-2 hover:text-opacity-90 hover:scale-105">Home</Link>
+      <Link to="/about" className="text-black transition-all duration-200 ease-in-out hover:underline active:underline underline-offset-4 decoration-2 hover:text-opacity-90 hover:scale-105">About</Link>
       {isLoggedIn && (
-        <Link to="/interview/setup" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Practice</Link>
+        <Link to="/interview/setup" className="text-black transition-all duration-200 ease-in-out hover:underline active:underline underline-offset-4 decoration-2 hover:text-opacity-90 hover:scale-105">Practice</Link>
       )}
       {isLoggedIn && (
-        <Link to="/dashboard" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Dashboard</Link>
+        <Link to="/dashboard" className="text-black transition-all duration-200 ease-in-out hover:underline active:underline underline-offset-4 decoration-2 hover:text-opacity-90 hover:scale-105">Dashboard</Link>
       )}
-      <Link to="/resources" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Resources</Link>
+      <Link to="/resources" className="text-black transition-all duration-200 ease-in-out hover:underline active:underline underline-offset-4 decoration-2 hover:text-opacity-90 hover:scale-105">Resources</Link>
     </div>
   )
 
