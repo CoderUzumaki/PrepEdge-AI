@@ -47,20 +47,20 @@ export default function Header() {
 
   const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
-      <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">Home</Link>
-      <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
+      <Link to="/" className="text-gray-900 hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Home</Link>
+      <Link to="/about" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">About</Link>
       {isLoggedIn && (
-        <Link to="/interview/setup" className="text-gray-700 hover:text-gray-900 transition-colors">Practice</Link>
+        <Link to="/interview/setup" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Practice</Link>
       )}
       {isLoggedIn && (
-        <Link to="/dashboard" className="text-gray-700 hover:text-gray-900 transition-colors">Dashboard</Link>
+        <Link to="/dashboard" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Dashboard</Link>
       )}
-      <Link to="/resources" className="text-gray-700 hover:text-gray-900 transition-colors">Resources</Link>
+      <Link to="/resources" className="text-black hover:underline underline-offset-4 decoration-2 transition-all duration-200 ease-in-out">Resources</Link>
     </div>
   )
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-white/70 backdrop-blur-md shadow-md border-b border-white/30 fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
