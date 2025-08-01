@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
 import Header from "../components/Header";
@@ -30,6 +30,12 @@ export default function Login() {
 	});
 
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (user) {
+			navigate("/dashboard", { replace: true });
+		}
+	}, [user, navigate]);
 
 	const validateEmail = (value) => {
 		if (value.trim() === "") return "empty";
