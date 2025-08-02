@@ -115,7 +115,7 @@ export default function Login() {
 			showToast("Logged in successfully!", "success");
 			setTimeout(() => {
 				navigate("/");
-			}, 2000);
+			}, 500);
 		} catch (err) {
 			showToast(err.message || "An error occurred during login", "error");
 		}

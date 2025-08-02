@@ -138,7 +138,7 @@ export default function SignUp() {
 			showToast("Account created successfully!", "success");
 			setTimeout(() => {
 				navigate("/login");
-			}, 2000);
+			}, 500);
 		} catch (err) {
 			showToast(
 				err.message || "An error occurred during sign up",

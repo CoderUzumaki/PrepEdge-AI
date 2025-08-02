@@ -93,12 +93,31 @@ cd ../server && npm install
 
 3. Create a .env file in /server/ with:
 ```bash
-MONGODB_URI=your_mongo_uri
-FIREBASE_ADMIN_SDK=your_firebase_admin_json
-HF_API_TOKEN=your_huggingface_api_key
+PORT=
+MONGO_URL=
+FIREBASE_SERVICE_ACCOUNT=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+HUGGING_FACE_API_KEY=
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_RECEIVER=
 ```
 
-4. Run the project:
+4. Create a .env file in /client/ with:
+```bash
+VITE_API_URL= <Your Backend Url>
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_API_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+```
+
+5. Run the project:
 Run frontend
 ```bash
 cd client && npm run dev

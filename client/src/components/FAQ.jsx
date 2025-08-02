@@ -39,7 +39,7 @@ export default function FAQ({
             <div key={index} className="border border-gray-200 rounded-lg bg-white">
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg"
+                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg cursor-pointer"
                 aria-expanded={isOpen}
               >
                 <span className="text-gray-900 font-medium text-sm md:text-base pr-4">

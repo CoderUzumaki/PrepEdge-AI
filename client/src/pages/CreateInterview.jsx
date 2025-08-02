@@ -291,7 +291,7 @@ export default function SetupForm() {
 																type
 															)
 														}
-														className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+														className={`px-4 py-3 rounded-lg border-2 transition-all font-medium cursor-pointer${
 															formData.interviewType ===
 															type
 																? "border-blue-500 bg-blue-50 text-blue-700"
@@ -369,7 +369,7 @@ export default function SetupForm() {
 																type
 															)
 														}
-														className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+														className={`px-4 py-3 rounded-lg border-2 transition-all font-medium cursor-pointer${
 															formData.experienceLevel ===
 															type
 																? "border-blue-500 bg-blue-50 text-blue-700"

@@ -27,7 +27,7 @@ export default function Home() {
 										onClick={() => {
 											navigate("/interview/setup");
 										}}
-										className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+										className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors cursor-pointer"
 									>
 										Get Started
 									</button>
@@ -35,7 +35,7 @@ export default function Home() {
 									onClick={() => {
 											navigate("/about");
 										}}
-									className="px-8 py-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 rounded-lg font-medium transition-colors">
+									className="px-8 py-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 rounded-lg font-medium transition-colors cursor-pointer">
 										Learn More
 									</button>
 								</div>
