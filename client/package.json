@@ -23,6 +23,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.1",
     "recharts": "^3.0.2",
+    "styled-components": "^6.1.19",
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
