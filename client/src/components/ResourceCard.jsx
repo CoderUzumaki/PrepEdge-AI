@@ -1,23 +1,23 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 const getCategoryColor = (category) => {
   switch (category) {
     case "Book":
-      return "bg-blue-100 text-blue-800"
+      return "bg-blue-100 text-blue-800";
     case "Guides":
-      return "bg-green-100 text-green-800"
+      return "bg-green-100 text-green-800";
     case "Course":
-      return "bg-purple-100 text-purple-800"
+      return "bg-purple-100 text-purple-800";
     case "Technical":
-      return "bg-indigo-100 text-indigo-800"
+      return "bg-indigo-100 text-indigo-800";
     case "Behavioral":
-      return "bg-yellow-100 text-yellow-800"
+      return "bg-yellow-100 text-yellow-800";
     case "Tools":
-      return "bg-pink-100 text-pink-800"
+      return "bg-pink-100 text-pink-800";
     default:
-      return "bg-gray-100 text-gray-800"
+      return "bg-gray-100 text-gray-800";
   }
-}
+};
 
 export default function ResourceCard({
   id,
@@ -45,7 +45,11 @@ export default function ResourceCard({
 
       <div className="p-6">
         <div className="mb-3">
-          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(category)}`}>
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(
+              category
+            )}`}
+          >
             {category}
           </span>
         </div>
@@ -54,7 +58,9 @@ export default function ResourceCard({
           {title}
         </h3>
 
-        <p className="text-gray-600 text-sm leading-relaxed mb-4">{description}</p>
+        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+          {description}
+        </p>
 
         <div className="flex items-center text-blue-600 text-sm font-medium group-hover:text-blue-700">
           <span>Learn More</span>
@@ -72,17 +78,20 @@ export default function ResourceCard({
         </div>
       </div>
     </div>
-  )
+  );
 
   if (link) {
     return (
-
-      <a href={link} target="_blank" rel="noopener noreferrer" className="block">
-         {cardContent}
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+      >
+        {cardContent}
       </a>
-
-    )
+    );
   }
 
-  return cardContent
+  return cardContent;
 }
