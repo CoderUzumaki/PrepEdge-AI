@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import OnTopBar from "./components/TopBar";
+import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
 	return (
@@ -10,6 +11,7 @@ function App() {
 			<Home />
 			<Footer />
 			<OnTopBar />
+			<ThemeToggle />
 		</div>
 	);
 }
