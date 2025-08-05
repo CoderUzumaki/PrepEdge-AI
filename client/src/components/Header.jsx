@@ -1,60 +1,65 @@
-import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { FaUser, FaSignOutAlt, FaChevronDown, FaBars, FaTimes } from "react-icons/fa"
-import { useAuth } from "../context/AuthContext"
-import React from "react"
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaUser, FaSignOutAlt, FaChevronDown, FaBars, FaTimes } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import React from "react";
 
 export default function Header() {
-  const { user, isLoggedIn, logout } = useAuth()
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const dropdownRef = useRef(null)
+  const { user, isLoggedIn, logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false)
+        setIsDropdownOpen(false);
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
-    setShowLogoutConfirm(true)
-    setIsDropdownOpen(false)
-  }
+    setShowLogoutConfirm(true);
+    setIsDropdownOpen(false);
+  };
 
-  const confirmLogout = () => {
-    logout()
-    setShowLogoutConfirm(false)
-  }
+  const confirmLogout = async () => {
+    // If you have a delete endpoint, replace this with axios call
+    // await axios.delete("/api/user/delete", { headers: { Authorization: `Bearer ${user.token}` } });
+
+    logout(); // Clears auth state
+    setShowLogoutConfirm(false);
+    navigate("/login");
+  };
 
   const cancelLogout = () => {
-    setShowLogoutConfirm(false)
-  }
+    setShowLogoutConfirm(false);
+  };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen)
-  }
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const getInitials = (name) => {
-    if (!name) return "U"
+    if (!name) return "U";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
@@ -68,7 +73,7 @@ export default function Header() {
       )}
       <Link to="/resources" className="text-gray-700 hover:text-gray-900 transition-colors">Resources</Link>
     </div>
-  )
+  );
 
   return (
     <>
@@ -96,7 +101,7 @@ export default function Header() {
             </div>
 
             <div className="hidden md:flex items-center space-x-4">
-              {!isLoggedIn ? (
+              {!user || !isLoggedIn ? (
                 <>
                   <Link to="/login" className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">Log in</Link>
                   <Link to="/signup" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors">Sign up</Link>
@@ -144,7 +149,7 @@ export default function Header() {
           {isMobileMenuOpen && (
             <div className="md:hidden mt-2 space-y-2 pb-4">
               <NavLinks />
-              {!isLoggedIn ? (
+              {!user || !isLoggedIn ? (
                 <div className="space-y-2 pt-2">
                   <Link to="/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Log in</Link>
                   <Link to="/signup" className="block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Sign up</Link>
@@ -183,5 +188,5 @@ export default function Header() {
         </div>
       )}
     </>
-  )
+  );
 }
