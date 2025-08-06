@@ -13,8 +13,19 @@ import multer from "multer";
 dotenv.config();
 const app = express();
 const upload = multer({ dest: "uploads/" });
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://prepedgeai.vercel.app'
+];
+
 app.use(cors({
-  origin: 'https://prepedgeai.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

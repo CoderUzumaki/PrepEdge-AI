@@ -11,6 +11,20 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const refreshUser = async () => {
+    const current = auth.currentUser;
+    if (current) {
+      const token = await current.getIdToken();
+      setUser({
+        uid: current.uid,
+        email: current.email,
+        name: current.displayName || "",
+        avatar: current.photoURL || "",
+        token,
+      });
+    }
+  };
+
   const logout = () => {
     auth.signOut()
       .then(() => {
@@ -25,7 +39,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
+        const token = await firebaseUser.getIdToken();
+
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName || "",
+          avatar: firebaseUser.photoURL || "",
+          token,
+        });
+
         setIsLoggedIn(true);
       } else {
         setUser(null);
@@ -38,7 +61,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, setLoading, isLoggedIn, setIsLoggedIn, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        loading,
+        setLoading,
+        isLoggedIn,
+        setIsLoggedIn,
+        logout,
+        refreshUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
