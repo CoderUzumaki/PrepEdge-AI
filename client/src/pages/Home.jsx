@@ -1,3 +1,4 @@
+import React, { useState } from 'react'; // Add useState import
 import Card from "../components/Card";
 import FAQ from "../components/FAQ";
 import faqData from "../data/faqData";
@@ -6,9 +7,13 @@ import { FaRobot, FaMicrophone, FaDesktop, FaChartLine } from "react-icons/fa";
 
 export default function Home() {
   const navigate = useNavigate();
+  
+  // Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Your existing content */}
       <section className="relative overflow-hidden">
         <div className="bg-gradient-to-br from-amber-200 via-orange-100 to-amber-300 rounded-3xl mx-4 mt-8 mb-16 lg:mx-8">
           <div className="max-w-7xl mx-auto px-6 py-16 lg:px-8 lg:py-24">
@@ -196,7 +201,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 py-16 mb-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            What You’ll Get
+            What You'll Get
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Everything you need to confidently prepare, practice, and perform
@@ -226,11 +231,67 @@ export default function Home() {
       <section className="mb-16">
         <FAQ
           title="Need Help? Start Here."
-          subtitle="Explore answers to common questions — and if you need more, we’re just a message away."
+          subtitle="Explore answers to common questions — and if you need more, we're just a message away."
           faqs={faqData}
           allowMultipleOpen={false}
         />
       </section>
+
+      {/* Inline Live Chat Support */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Chat Button */}
+        {!isChatOpen && (
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          >
+            💬 Chat
+          </button>
+        )}
+
+        {/* Chat Window */}
+        {isChatOpen && (
+          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-96 h-96">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 rounded-t-xl flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">PrepEdge Support</h3>
+                <p className="text-xs text-blue-100">Online now</p>
+              </div>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="text-white hover:text-blue-200"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Messages */}
+            <div className="h-64 overflow-y-auto p-4 bg-gray-50">
+              <div className="bg-white p-3 rounded-lg shadow-sm border">
+                <p className="text-sm text-gray-800">
+                  Hi! Welcome to PrepEdge AI! 👋 How can I help you today?
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Just now</p>
+              </div>
+            </div>
+            
+            {/* Input */}
+            <div className="border-t p-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Type your message..."
+                  className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-sm">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
