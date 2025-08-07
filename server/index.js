@@ -5,12 +5,13 @@
 
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import admin from "firebase-admin";
 import multer from "multer";
+import 'dotenv/config';
 
-dotenv.config();
+console.log("Hugging Face Key:", process.env.HUGGINGFACE_API_KEY);
+
 const app = express();
 const upload = multer({ dest: "uploads/" });
 app.use(cors({
