@@ -27,3 +27,6 @@ tmp/
 *.sublime-project
 *.tgz
 *.lock
+.env
+.env
+.git
