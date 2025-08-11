@@ -7,9 +7,18 @@ import { useAuth } from "../context/AuthContext";
 
 import { FaMicrophone, FaArrowRight } from "react-icons/fa";
 
+//new feature imports
+import { analyzeSpeech } from "../utils/speechAnalysis";
+import ConfidenceHeatmap from "../components/ConfidenceHeatmap";
+
+
+
+
+
 const SpeechRecognition =
 	window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
 
 export default function Interview() {
 	const { interviewId } = useParams();
@@ -23,6 +32,13 @@ export default function Interview() {
 		message: "",
 		type: "success",
 	});
+
+	// new feature states
+const [transcriptWords, setTranscriptWords] = useState([]);
+const [analyzedWords, setAnalyzedWords] = useState([]);
+const [stats, setStats] = useState(null);
+
+
 	const { loading, setLoading } = useAuth();
 	const navigate = useNavigate();
 
@@ -76,6 +92,7 @@ export default function Interview() {
 		};
 	};
 
+
 	const startRecording = () => {
 		if (!recognition) {
 			showToast(
@@ -105,20 +122,58 @@ export default function Interview() {
 			setIsRecording(false);
 		};
 
-		recognition.onresult = (event) => {
-			let interimTranscript = "";
+		// recognition.onresult = (event) => {
+		// 	let interimTranscript = "";
 
-			for (let i = event.resultIndex; i < event.results.length; i++) {
-				const transcript = event.results[i][0].transcript;
-				if (event.results[i].isFinal) {
-					finalTranscript += transcript + " ";
-				} else {
-					interimTranscript += transcript;
-				}
-			}
+		// 	for (let i = event.resultIndex; i < event.results.length; i++) {
+		// 		const transcript = event.results[i][0].transcript;
+		// 		if (event.results[i].isFinal) {
+		// 			finalTranscript += transcript + " ";
+		// 		} else {
+		// 			interimTranscript += transcript;
+		// 		}
+		// 	}
 			
-			setAnswer(answer + finalTranscript + interimTranscript);
-		};
+		// 	setAnswer(answer + finalTranscript + interimTranscript);
+		// };
+recognition.onresult = (event) => {
+  let newWords = [];
+
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    const result = event.results[i];
+    
+    if (!result.isFinal) continue; // Only process finalized results
+
+    const transcript = result[0].transcript;
+    const confidence = result[0].confidence;
+
+    const words = transcript.trim().split(/\s+/);
+    const baseTime = Date.now() / 1000;
+
+    words.forEach((word, idx) => {
+      newWords.push({
+        word,
+        confidence,
+        time: baseTime + idx * 0.4, // simulate time per word
+      });
+    });
+  }
+
+  if (newWords.length === 0) return;
+
+  setTranscriptWords((prev) => {
+    const combined = [...prev, ...newWords];
+    const { analyzedWords, stats } = analyzeSpeech(combined);
+    setAnalyzedWords(analyzedWords);
+    setStats(stats); // assuming you have a `stats` state variable
+    return combined;
+  });
+
+  setAnswer((prev) => prev + " " + newWords.map(w => w.word).join(" "));
+};
+
+
+
 
 		recognition.start();
 	};
@@ -138,9 +193,18 @@ export default function Interview() {
 
 			if (currentQuestionIndex < questions.length - 1) {
 				const nextIndex = currentQuestionIndex + 1;
-				setCurrentQuestionIndex(nextIndex);
-				setAnswer("");
-				speakQuestion(questions[nextIndex].question);
+				// setCurrentQuestionIndex(nextIndex);
+				// setAnswer("");
+				// speakQuestion(questions[nextIndex].question);
+			  setCurrentQuestionIndex(nextIndex);
+              setAnswer("");
+              setTranscriptWords([]);
+              setAnalyzedWords([]);
+              setStats(null);
+              speakQuestion(questions[nextIndex].question);
+
+
+			
 			} else {
 				showToast("Interview Completed!", "success");
 				navigate(`/interview/report/${interviewId}`);
@@ -196,12 +260,32 @@ export default function Interview() {
 						</div>
 
 						<div className="mb-6">
-							<textarea
+							 <textarea
+							 disabled={isRecording}
 								value={answer}
 								onChange={(e) => setAnswer(e.target.value)}
 								placeholder="Type your answer here..."
 								className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-gray-700 placeholder-gray-400"
-							/>
+							/> 
+
+
+{/* new heatmap component below the textarea */}
+{!isRecording && analyzedWords.length > 0 && (
+  <ConfidenceHeatmap analyzedWords={analyzedWords} />
+)}
+
+
+{/* confidence summary */}
+{!isRecording && stats && (
+  <div className="mt-4 p-4 border rounded bg-gray-100 text-sm text-gray-800">
+    <div><strong>Filler Words:</strong> {stats.fillerCount}</div>
+    <div><strong>Long Pauses:</strong> {stats.pauseCount}</div>
+    <div><strong>Low-Confidence Words:</strong> {stats.lowConfidenceCount}</div>
+    {/* <div><strong>Average Confidence:</strong> {stats.averageConfidence}%</div> */}
+	<div><strong>Confidence Level:</strong> {stats.confidenceLevel}</div>
+  </div>
+)}
+
 						</div>
 
 						<div className="flex justify-between items-center">

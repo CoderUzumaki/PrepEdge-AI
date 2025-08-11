@@ -114,8 +114,11 @@ Ensure that:
       messages: [{ role: "user", content: prompt }],
       max_tokens: 2000,
     });
+console.log("Raw Hugging Face API response:", JSON.stringify(response, null, 2));
 
     const generatedText = response.choices[0].message.content;
+    console.log("AI generated questions text:\n", generatedText);
+
     const questions = [];
     const lines = generatedText.split("\n");
     let currentQuestion = null;
@@ -154,6 +157,8 @@ Ensure that:
 
     return questions;
   } catch (error) {
+            console.error("Question generation error:", error);
+
     throw new Error(
       `Error generating questions: ${error?.message || JSON.stringify(error)}`
     );

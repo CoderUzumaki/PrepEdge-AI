@@ -27,4 +27,8 @@ tmp/
 *.sublime-project
 *.tgz
 *.lock
+
+server/config/firebaseServiceAccountKey.json
+
 .env
+
