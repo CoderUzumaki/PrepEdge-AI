@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import Toast from "../components/Toast";
@@ -34,6 +34,12 @@ export default function SignUp() {
 	const [passwordStrength, setPasswordStrength] = useState("");
 
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (user) {
+			navigate("/dashboard", { replace: true });
+		}
+	}, [user, navigate]);
 
 	const validateName = (value) => {
 		if (value.trim() === "") return "empty";
