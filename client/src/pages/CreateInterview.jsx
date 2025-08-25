@@ -125,16 +125,17 @@ export default function SetupForm() {
 		}
 		setLoading(true);
 		const token = await user.getIdToken();
-		 console.log("-------\nToken being sent to backend:", token, "\n-------");
+		 // console.log("-------\nToken being sent to backend:", token, "\n-------");
 
 		const data = new FormData();
 		Object.keys(formData).forEach((key) => {
 			if (formData[key]) {
 				data.append(key, formData[key]);
 			}
-			 console.log("-------\nForm Data: \n", [...data.entries()], "\n-------");
+			 // console.log("-------\nForm Data: \n", [...data.entries()], "\n-------");
 		});
 		
+
 		try {
 			const res = await axios.post(
 				`${import.meta.env.VITE_API_URL}/api/interview/setup`,
@@ -145,7 +146,7 @@ export default function SetupForm() {
 					},
 				}
 			);
-			console.log("-------\nResponse from interview setup:", res.data, "\n-------");
+			// console.log("-------\nResponse from interview setup:", res.data, "\n-------");
 
 			showToast("Interview setup complete!", "success");
 			const interviewId = res.data.interview._id;

@@ -1,7 +1,7 @@
-/*
+
  * @license MIT License
  * Copyright (c) 2025 Abhinav Mishra
- */
+ 
 
 import express from "express";
 import Interview from "../models/InterviewModel.js";
@@ -233,3 +233,5 @@ router.get("/", firebaseAuthMiddleware, async (req, res) => {
 });
 
 export default router;
+
+
