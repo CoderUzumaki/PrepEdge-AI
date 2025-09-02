@@ -57,20 +57,37 @@ const interviewSchema = new mongoose.Schema({
 		trim: true,
 	},
 
-	questions: [
-		{
-			question: {
-				type: String,
-				required: true,
-				trim: true,
+		questions: [
+			{
+				question: {
+					type: String,
+					required: true,
+					trim: true,
+				},
+				preferred_answer: {
+					type: String,
+					required: true,
+					trim: true,
+				},
+				difficulty: {
+					type: String,
+					enum: ["easy", "medium", "hard"],
+					default: "medium",
+				},
+				topics: {
+					type: [String],
+					default: [],
+				},
+				company_tags: {
+					type: [String],
+					default: [],
+				},
+				bookmarkedBy: {
+					type: [String], // user IDs who bookmarked
+					default: [],
+				},
 			},
-			preferred_answer: {
-				type: String,
-				required: true,
-				trim: true,
-			},
-		},
-	],
+		],
 
 	created_at: {
 		type: Date,

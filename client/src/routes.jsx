@@ -13,6 +13,9 @@ import Resources from "./pages/Resources";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Animated404 from "./pages/404";
+import ResumeReview from "./pages/ResumeReview";
+import MockInterview from "./pages/MockInterview";
+import CommunityQA from "./pages/CommunityQA";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +29,10 @@ const router = createBrowserRouter([
       { path: "interview/:interviewId", element: <ProtectedRoute><Interview /></ProtectedRoute> },
       { path: "interview/report/:interviewId", element: <ProtectedRoute><InterviewReport /></ProtectedRoute> },
       { path: "dashboard", element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
-      { path: "resources", element: <Resources /> },
+  { path: "resources", element: <Resources /> },
+  { path: "resume-review", element: <ProtectedRoute><ResumeReview /></ProtectedRoute> },
+  { path: "mock-interview", element: <ProtectedRoute><MockInterview /></ProtectedRoute> },
+  { path: "community-qa", element: <ProtectedRoute><CommunityQA /></ProtectedRoute> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
       { path: "*", element: <Animated404 /> },

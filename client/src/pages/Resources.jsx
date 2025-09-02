@@ -2,10 +2,34 @@ import { Link } from "react-router-dom";
 import ResourceCard from "../components/ResourceCard";
 import resources from "../data/resourcesData";
 import featuredResources from "../data/featuredResourcesData";
+import TagFilter from "../components/TagFilter";
+import BookmarkButton from "../components/BookmarkButton";
+import { useUserData } from "../context/UserDataContext";
+import { useState } from "react";
 
 export default function HeroSection() {
-	return (
-		<div>
+   const { userData, setUserData } = useUserData();
+   const [selectedTags, setSelectedTags] = useState([]);
+
+   // Collect all unique tags from resources
+   const allTags = Array.from(new Set(resources.flatMap(r => [r.category, ...(r.topics || [])]).filter(Boolean)));
+
+   // Filter resources by selected tags
+   const filteredResources = selectedTags.length
+	   ? resources.filter(r => selectedTags.every(tag => (r.topics || []).includes(tag) || r.category === tag))
+	   : resources;
+
+   const handleBookmark = (id) => {
+	   setUserData((prev) => ({
+		   ...prev,
+		   bookmarks: prev.bookmarks?.includes(id)
+			   ? prev.bookmarks.filter((bid) => bid !== id)
+			   : [...(prev.bookmarks || []), id],
+	   }));
+   };
+
+   return (
+	   <div>
 			<section className="relative bg-gradient-to-br from-blue-500 via-green-500 to-emerald-600 overflow-hidden min-h-[600px]">
 				<div className="absolute inset-0">
 					<div className="absolute inset-0 bg-neutral-950 bg-opacity-10"></div>
@@ -165,18 +189,40 @@ export default function HeroSection() {
 				</div>
 			</section>
 
-			<section id="all-resources" className="py-16 bg-stone-50 -mb-20">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="mb-12">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-8">All Resources</h2>
-                    </div>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-						{resources.map((resource) => (
-							<ResourceCard key={resource.id} {...resource} />
-						))}
-					</div>
-				</div>
-			</section>
+			   <section id="all-resources" className="py-16 bg-stone-50 -mb-20">
+				   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+						<div className="mb-12">
+							<h2 className="text-3xl font-bold text-gray-900 mb-8">All Resources</h2>
+							{/* Tag Filter UI */}
+							<TagFilter
+								tags={allTags}
+								selected={selectedTags}
+								onChange={(tag) =>
+									setSelectedTags((prev) =>
+										prev.includes(tag)
+											? prev.filter((t) => t !== tag)
+											: [...prev, tag]
+									)
+								}
+							/>
+						</div>
+					   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+						   {filteredResources.map((resource) => (
+							   <div key={resource.id} className="relative">
+								   <ResourceCard {...resource} />
+								   {userData && (
+									   <div className="absolute top-3 right-3 z-10">
+										   <BookmarkButton
+											   bookmarked={userData.bookmarks?.includes(resource.id)}
+											   onClick={() => handleBookmark(resource.id)}
+										   />
+									   </div>
+								   )}
+							   </div>
+						   ))}
+					   </div>
+				   </div>
+			   </section>
 		</div>
 	);
 }
