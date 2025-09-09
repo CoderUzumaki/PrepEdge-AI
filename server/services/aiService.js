@@ -1,11 +1,15 @@
 import { InferenceClient } from "@huggingface/inference";
 
-if (!process.env.HUGGING_FACE_API_KEY) {
-  throw new Error("Missing Hugging Face API Key in environment");
+function getHuggingFaceClient() {
+  const apiKey = process.env.HUGGINGFACE_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing Hugging Face API Key in environment");
+  }
+  return new InferenceClient(apiKey);
 }
-const hf = new InferenceClient(process.env.HUGGING_FACE_API_KEY);
 
 const summarizeResumeText = async (rawText) => {
+  const hf = getHuggingFaceClient();
   const prompt = `
 You are an expert resume reviewer.
 
@@ -52,6 +56,7 @@ const generateQuestions = async ({
   focus_area,
   resume_summary,
 }) => {
+  const hf = getHuggingFaceClient();
   const prompt = `You are a senior technical interviewer and HR expert specializing in AI-driven interview assessments.
 
 Your task is to generate ${num_of_questions} well-crafted, high-quality ${
@@ -161,6 +166,7 @@ Ensure that:
 };
 
 const analyzeAnswer = async ({ question, userAnswer, preferredAnswer, role, experience_level, interview_type }) => {
+  const hf = getHuggingFaceClient();
   const prompt = `You are an expert technical and HR interviewer and AI coach.
 
 Analyze the user's answer "${userAnswer}" in response to the question "${question}", comparing it to the ideal preferred answer "${preferredAnswer}". Consider the following context:
@@ -210,6 +216,7 @@ Example:
 };
 
 const interviewSummary = async (combinedFeedback) => {
+  const hf = getHuggingFaceClient();
   const feedbackText = combinedFeedback?.trim() || "No feedback provided.";
 
   const prompt = `I have a combined text containing raw feedback for my interview question and answers. I want you to analyze it and generate the following structured outputs:
