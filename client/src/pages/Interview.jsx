@@ -1,30 +1,29 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import Toast from "../components/Toast";
-import LoadingScreen from "../components/LoadingScreen";
-import { useAuth } from "../context/AuthContext";
 
+import TagFilter from "../components/TagFilter";
+import BookmarkButton from "../components/BookmarkButton";
+import { useUserData } from "../context/UserDataContext";
 import { FaMicrophone, FaArrowRight } from "react-icons/fa";
 
 const SpeechRecognition =
 	window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-export default function Interview() {
-	const { interviewId } = useParams();
-	const [questions, setQuestions] = useState([]);
-	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-	const [answer, setAnswer] = useState("");
-	const [totalTime, setTotalTime] = useState(0);
-	const [isRecording, setIsRecording] = useState(false);
-	const [toast, setToast] = useState({
-		show: false,
-		message: "",
-		type: "success",
-	});
-	const { loading, setLoading } = useAuth();
-	const navigate = useNavigate();
+   const { interviewId } = useParams();
+   const [questions, setQuestions] = useState([]);
+   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+   const [answer, setAnswer] = useState("");
+   const [totalTime, setTotalTime] = useState(0);
+   const [isRecording, setIsRecording] = useState(false);
+   const [toast, setToast] = useState({
+	   show: false,
+	   message: "",
+	   type: "success",
+   });
+   const [selectedTags, setSelectedTags] = useState([]);
+   const [filteredIndexes, setFilteredIndexes] = useState([]);
+   const { loading, setLoading } = useAuth();
+   const { userData, setUserData } = useUserData();
+   const navigate = useNavigate();
 
 	const showToast = (message, type) => {
 		setToast({ show: true, message, type });
@@ -39,24 +38,41 @@ export default function Interview() {
 		window.speechSynthesis.speak(utterance);
 	};
 
-	useEffect(() => {
-		const fetchQuestions = async () => {
-			try {
-				const res = await axios.get(
-					`${
-						import.meta.env.VITE_API_URL
-					}/api/interview/${interviewId}`
-				);
-				setQuestions(res.data.questions);
-				if (res.data.questions.length > 0) {
-					speakQuestion(res.data.questions[0].question);
-				}
-			} catch (err) {
-				showToast(err.message || "Failed to load questions.", "error");
-			}
-		};
-		fetchQuestions();
-	}, [interviewId]);
+	   useEffect(() => {
+		   const fetchQuestions = async () => {
+			   try {
+				   const res = await axios.get(
+					   `${import.meta.env.VITE_API_URL}/api/interview/${interviewId}`
+				   );
+				   setQuestions(res.data.questions);
+				   if (res.data.questions.length > 0) {
+					   speakQuestion(res.data.questions[0].question);
+				   }
+			   } catch (err) {
+				   showToast(err.message || "Failed to load questions.", "error");
+			   }
+		   };
+		   fetchQuestions();
+	   }, [interviewId]);
+
+	   // Tag filtering logic
+	   useEffect(() => {
+		   if (!selectedTags.length) {
+			   setFilteredIndexes(questions.map((_, idx) => idx));
+		   } else {
+			   setFilteredIndexes(
+				   questions
+					   .map((q, idx) =>
+						   selectedTags.every((tag) =>
+							   (q.topics || []).includes(tag) || (q.company_tags || []).includes(tag) || (q.difficulty === tag)
+						   )
+							   ? idx
+							   : null
+					   )
+					   .filter((idx) => idx !== null)
+			   );
+		   }
+	   }, [selectedTags, questions]);
 
 	useEffect(() => {
 		const totalTimer = setInterval(() => {
@@ -153,102 +169,140 @@ export default function Interview() {
 	};
 
 	const totalTimeFormatted = formatTotalTime(totalTime);
-	const currentQuestion = questions[currentQuestionIndex];
+		// Only show filtered questions
+		const filteredQuestions = filteredIndexes.map((i) => questions[i]);
+		const currentFilteredIndex = filteredIndexes.indexOf(currentQuestionIndex);
+		const currentQuestion = questions[currentQuestionIndex];
 
 	if (loading) {
 		return <LoadingScreen message="Analyzing your Answer..." showProgress />;
 	}
 
-	return (
-		<div className="min-h-screen bg-gray-50">
-			{toast.show && (
-				<Toast
-					message={toast.message}
-					type={toast.type}
-					onClose={hideToast}
-				/>
-			)}
 
-			<main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				<div className="text-center mb-8">
-					<h1 className="text-3xl font-bold text-gray-900 mb-2">
-						Interview
-					</h1>
-					<p className="text-gray-600">
-						Practice answering common interview questions in a
-						simulated environment
-					</p>
-				</div>
+	   return (
+		   <div className="min-h-screen bg-gray-50">
+			   {toast.show && (
+				   <Toast
+					   message={toast.message}
+					   type={toast.type}
+					   onClose={hideToast}
+				   />
+			   )}
 
-				{currentQuestion && (
-					<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
-						<div className="flex justify-between items-center mb-6">
-							<div className="text-sm font-medium text-gray-700">
-								Question {currentQuestionIndex + 1} of{" "}
-								{questions.length}
-							</div>
-						</div>
+			   <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				   <div className="text-center mb-8">
+					   <h1 className="text-3xl font-bold text-gray-900 mb-2">
+						   Interview
+					   </h1>
+					   <p className="text-gray-600">
+						   Practice answering common interview questions in a
+						   simulated environment
+					   </p>
+				   </div>
 
-						<div className="mb-6">
-							<h2 className="text-xl font-medium text-gray-900 leading-relaxed">
-								{currentQuestion.question}
-							</h2>
-						</div>
+				   {/* Tag Filter UI */}
+				   <TagFilter
+					   tags={Array.from(new Set(questions.flatMap(q => [q.difficulty, ...(q.topics || []), ...(q.company_tags || [])]).filter(Boolean)))}
+					   selected={selectedTags}
+					   onChange={(tag) =>
+						   setSelectedTags((prev) =>
+							   prev.includes(tag)
+								   ? prev.filter((t) => t !== tag)
+								   : [...prev, tag]
+						   )
+					   }
+				   />
 
-						<div className="mb-6">
-							<textarea
-								value={answer}
-								onChange={(e) => setAnswer(e.target.value)}
-								placeholder="Type your answer here..."
-								className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-gray-700 placeholder-gray-400"
-							/>
-						</div>
+				   {currentQuestion && (
+					   <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+						   <div className="flex justify-between items-center mb-6">
+							   <div className="text-sm font-medium text-gray-700">
+								   Question {currentFilteredIndex + 1} of {filteredQuestions.length}
+							   </div>
+							   {/* Bookmark Button */}
+							   {userData && (
+								   <BookmarkButton
+									   bookmarked={userData.bookmarks?.includes(currentQuestion._id)}
+									   onClick={async () => {
+										   try {
+											   const token = await userData.firebase_user_id;
+											   // Replace with actual API call to bookmark/unbookmark
+											   // await axios.post(`/api/user/bookmark`, { id: currentQuestion._id });
+											   // For now, update local state
+											   setUserData((prev) => ({
+												   ...prev,
+												   bookmarks: prev.bookmarks?.includes(currentQuestion._id)
+													   ? prev.bookmarks.filter((id) => id !== currentQuestion._id)
+													   : [...(prev.bookmarks || []), currentQuestion._id],
+											   }));
+										   } catch (e) {
+											   showToast("Failed to update bookmark", "error");
+										   }
+									   }}
+								   />
+							   )}
+						   </div>
 
-						<div className="flex justify-between items-center">
-							<button
-								onClick={() => {
-                  if (isRecording) {
-                    recognition.stop();
-                  } else {
-                    startRecording();
-                  }
-                }}
-								className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${
-									isRecording
-										? "bg-red-50 border-red-300 text-red-700"
-										: "bg-white text-gray-700 hover:bg-gray-50"
-								}`}
-							>
-								<FaMicrophone
-									className={`w-4 h-4 ${
-										isRecording
-											? "text-red-500"
-											: "text-gray-400"
-									}`}
-								/>
-								<span>
-									{isRecording
-										? "Recording..."
-										: "Record Answer"}
-								</span>
-							</button>
+						   <div className="mb-6">
+							   <h2 className="text-xl font-medium text-gray-900 leading-relaxed">
+								   {currentQuestion.question}
+							   </h2>
+						   </div>
 
-							<button
-								onClick={submitAnswer}
-								disabled={!answer.trim()}
-								className="flex items-center space-x-2 px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								<span>
-									{currentQuestionIndex >=
-									questions.length - 1
-										? "Finish"
-										: "Next Question"}
-								</span>
-								<FaArrowRight className="w-4 h-4" />
-							</button>
-						</div>
-					</div>
-				)}
+						   <div className="mb-6">
+							   <textarea
+								   value={answer}
+								   onChange={(e) => setAnswer(e.target.value)}
+								   placeholder="Type your answer here..."
+								   className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-gray-700 placeholder-gray-400"
+							   />
+						   </div>
+
+						   <div className="flex justify-between items-center">
+							   <button
+								   onClick={() => {
+									   if (isRecording) {
+										   recognition.stop();
+									   } else {
+										   startRecording();
+									   }
+								   }}
+								   className={`flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg transition-colors ${
+									   isRecording
+										   ? "bg-red-50 border-red-300 text-red-700"
+										   : "bg-white text-gray-700 hover:bg-gray-50"
+								   }`}
+							   >
+								   <FaMicrophone
+									   className={`w-4 h-4 ${
+										   isRecording
+											   ? "text-red-500"
+											   : "text-gray-400"
+									   }`}
+								   />
+								   <span>
+									   {isRecording
+										   ? "Recording..."
+										   : "Record Answer"}
+								   </span>
+							   </button>
+
+							   <button
+								   onClick={submitAnswer}
+								   disabled={!answer.trim()}
+								   className="flex items-center space-x-2 px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							   >
+								   <span>
+									   {currentQuestionIndex >=
+									   questions.length - 1
+										   ? "Finish"
+										   : "Next Question"}
+								   </span>
+								   <FaArrowRight className="w-4 h-4" />
+							   </button>
+						   </div>
+					   </div>
+				   )}
 
 				<div className="flex justify-center space-x-4">
 					<div className="bg-gray-200 rounded-lg px-6 py-4 text-center">
@@ -273,4 +327,4 @@ export default function Interview() {
 			</main>
 		</div>
 	);
-}
+

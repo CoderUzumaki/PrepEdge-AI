@@ -1,3 +1,4 @@
+
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
@@ -24,11 +25,29 @@ const userSchema = new mongoose.Schema({
         default: 'basic',
         required: true
     },
+    badges: {
+        type: [String],
+        default: [],
+    },
+    streak: {
+        type: Number,
+        default: 0,
+    },
+    leaderboardPoints: {
+        type: Number,
+        default: 0,
+    },
+    bookmarks: {
+        type: [{
+            type: String, // Can be resource/question/interview ID
+        }],
+        default: [],
+    },
     created_at: {
         type: Date,
         default: Date.now
     },
-})
+});
 
 const User = mongoose.model('User', userSchema);
 export default User;

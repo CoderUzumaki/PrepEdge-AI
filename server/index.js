@@ -29,15 +29,21 @@ admin.initializeApp({
 });
 
 // Routing
+
 import authRoutes from "./routes/authRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import mockInterviewRoutes from "./routes/mockInterviewRoutes.js";
+import communityQARoutes from "./routes/communityQARoutes.js";
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/mock-interview", mockInterviewRoutes);
+app.use("/api/community-qa", communityQARoutes);
 
 // Starting the server
 const PORT = process.env.PORT || 5000;

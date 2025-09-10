@@ -1,0 +1,19 @@
+{
+  "welcome": "Welcome to PrepEdge AI!",
+  "dashboard": "Dashboard",
+  "resources": "Resources",
+  "mockInterview": "Mock Interview",
+  "communityQA": "Community Q&A",
+  "resumeReview": "Resume Review",
+  "login": "Log in",
+  "signup": "Sign up",
+  "dashboardTitle": "Interview Performance Dashboard",
+  "upcomingMockInterviews": "Upcoming Mock Interviews",
+  "join": "Join",
+  "noUpcomingInterviews": "No upcoming interviews",
+  "recentActivity": "Recent Activity",
+  "noRecentActivity": "No recent activity",
+  "recommendedResources": "Recommended Resources",
+  "noRecommendations": "No recommendations",
+  "summary": "Summary"
+}

@@ -1,0 +1,19 @@
+{
+  "welcome": "PrepEdge AI में आपका स्वागत है!",
+  "dashboard": "डैशबोर्ड",
+  "resources": "संसाधन",
+  "mockInterview": "मॉक इंटरव्यू",
+  "communityQA": "सामुदायिक प्रश्नोत्तर",
+  "resumeReview": "रिज़्यूमे समीक्षा",
+  "login": "लॉग इन करें",
+  "signup": "साइन अप करें",
+  "dashboardTitle": "इंटरव्यू प्रदर्शन डैशबोर्ड",
+  "upcomingMockInterviews": "आगामी मॉक इंटरव्यू",
+  "join": "जॉइन करें",
+  "noUpcomingInterviews": "कोई आगामी इंटरव्यू नहीं",
+  "recentActivity": "हाल की गतिविधि",
+  "noRecentActivity": "कोई हाल की गतिविधि नहीं",
+  "recommendedResources": "अनुशंसित संसाधन",
+  "noRecommendations": "कोई अनुशंसा नहीं",
+  "summary": "सारांश"
+}

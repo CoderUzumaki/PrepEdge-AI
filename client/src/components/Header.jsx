@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { FaUser, FaSignOutAlt, FaChevronDown, FaBars, FaTimes } from "react-icons/fa"
 import { useAuth } from "../context/AuthContext"
 import React from "react"
 
 export default function Header() {
+  const { t, i18n } = useTranslation();
   const { user, isLoggedIn, logout } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -58,21 +60,30 @@ export default function Header() {
 
   const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
-      <Link to="/" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Home</Link>
+      <Link to="/" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('welcome', 'Home')}</Link>
       <Link to="/about" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">About</Link>
       {isLoggedIn && (
         <Link to="/interview/setup" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Practice</Link>
       )}
       {isLoggedIn && (
-        <Link to="/dashboard" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Dashboard</Link>
+        <Link to="/dashboard" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('dashboard')}</Link>
       )}
-      <Link to="/resources" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Resources</Link>
+      <Link to="/resources" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('resources')}</Link>
+      {isLoggedIn && (
+        <Link to="/mock-interview" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('mockInterview')}</Link>
+      )}
+      {isLoggedIn && (
+        <Link to="/community-qa" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('communityQA')}</Link>
+      )}
+      {isLoggedIn && (
+        <Link to="/resume-review" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('resumeReview')}</Link>
+      )}
     </div>
   )
 
   return (
     <>
-  <header className="sticky top-0 z-50 backdrop-blur-md bg-white/60 border-b border-white/30 shadow-sm transition-colors duration-300">
+  <header className="sticky top-0 z-50 backdrop-blur-md bg-white/60 border-b border-white/30 shadow-sm transition-colors duration-300" role="banner">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -82,7 +93,7 @@ export default function Header() {
               </Link>
             </div>
 
-            <nav className="hidden md:flex">
+            <nav className="hidden md:flex" aria-label="Main Navigation">
               <NavLinks />
             </nav>
 
@@ -90,22 +101,36 @@ export default function Header() {
               <button
                 onClick={toggleMobileMenu}
                 className="text-gray-700 hover:text-gray-900 focus:outline-none"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
               >
                 {isMobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
               </button>
             </div>
 
             <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 mr-2"
+                aria-label="Switch language"
+              >
+                {i18n.language === 'en' ? 'हिंदी' : 'EN'}
+              </button>
               {!isLoggedIn ? (
                 <>
-                  <Link to="/login" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Log in</Link>
-                  <Link to="/signup" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors">Sign up</Link>
+                  <Link to="/login" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">{t('login')}</Link>
+                  <Link to="/signup" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors">{t('signup')}</Link>
                 </>
               ) : (
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={toggleDropdown}
                     className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/40 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-haspopup="true"
+                    aria-expanded={isDropdownOpen}
+                    aria-controls="user-menu"
+                    aria-label="User menu"
                   >
                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
                       {user?.avatar ? (
@@ -118,18 +143,18 @@ export default function Header() {
                   </button>
 
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div id="user-menu" role="menu" aria-label="User menu" className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <div className="px-4 py-2 border-b border-gray-100">
                         <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
 
                       <div className="py-1">
-                        <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300" onClick={() => setIsDropdownOpen(false)}>
+                        <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300" onClick={() => setIsDropdownOpen(false)} role="menuitem">
                           <FaUser className="w-4 h-4 mr-3 text-gray-400" />
                           Profile
                         </Link>
-                        <button onClick={handleLogout} className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300 text-left">
+                        <button onClick={handleLogout} className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300 text-left" role="menuitem">
                           <FaSignOutAlt className="w-4 h-4 mr-3 text-gray-400" />
                           Logout
                         </button>
@@ -142,17 +167,24 @@ export default function Header() {
           </div>
 
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-2 space-y-2 pb-4">
+            <div id="mobile-menu" className="md:hidden mt-2 space-y-2 pb-4" role="menu" aria-label="Mobile Navigation">
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'hi' : 'en')}
+                className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 mb-2"
+                aria-label="Switch language"
+              >
+                {i18n.language === 'en' ? 'हिंदी' : 'EN'}
+              </button>
               <NavLinks />
               {!isLoggedIn ? (
                 <div className="space-y-2 pt-2">
-                  <Link to="/login" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Log in</Link>
-                  <Link to="/signup" className="block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Sign up</Link>
+                  <Link to="/login" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105" role="menuitem">{t('login')}</Link>
+                  <Link to="/signup" className="block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" role="menuitem">{t('signup')}</Link>
                 </div>
               ) : (
                 <div className="space-y-2 pt-2">
-                  <Link to="/profile" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Profile</Link>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 rounded transition-colors duration-300 text-gray-700 hover:text-cyan-500 hover:bg-white/40">Logout</button>
+                  <Link to="/profile" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105" role="menuitem">Profile</Link>
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 rounded transition-colors duration-300 text-gray-700 hover:text-cyan-500 hover:bg-white/40" role="menuitem">Logout</button>
                 </div>
               )}
             </div>
