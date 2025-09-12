@@ -28,3 +28,6 @@ tmp/
 *.tgz
 *.lock
 .env
+server/firebase.js
+
+server/firebase.js
