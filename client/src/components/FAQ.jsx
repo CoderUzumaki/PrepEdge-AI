@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"
+import { Link } from "react-router-dom";
 
 export default function FAQ({
   title = "Frequently Asked Questions",
@@ -66,12 +67,13 @@ export default function FAQ({
 
       <div className="mt-12 flex">
         <p className="text-gray-600 mb-4">Still have questions?</p>
-        <a
-          href="/contact#contact-form"
-          className="inline-flex items-center justify-center ml-3 mb-4 text-blue-500 font-semibold rounded-lg transition-colors"
-        >
-          Contact Us
-        </a>
+        
+        <Link
+						to="/contact#contact-form"
+						className="inline-flex items-center justify-center ml-3 mb-4 text-blue-500 font-semibold rounded-lg transition-colors"
+					>
+						Contact Us
+					</Link>
       </div>
     </div>
   )

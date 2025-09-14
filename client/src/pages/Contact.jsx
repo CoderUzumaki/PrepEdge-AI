@@ -1,5 +1,3 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import FAQ from "../components/FAQ";
 import ContactForm from "../components/ContactForm";
 import faqData from "../data/faqData";
@@ -7,7 +5,6 @@ import faqData from "../data/faqData";
 export default function Contact() {
 	return (
 		<div className="min-h-screen bg-white">
-			<Header />
 			<section className="py-16 lg:py-20 bg-gray-50">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 					<h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -39,8 +36,6 @@ export default function Contact() {
 					/>
 				</div>
 			</section>
-
-			<Footer />
 		</div>
 	);
 }

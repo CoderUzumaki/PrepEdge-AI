@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import ContentSection from "../components/ContentSection";
 import ReviewQuestion from "../components/QuestionReview";
 import downloadPDF from "../utils/pdfDownload";
@@ -44,7 +42,6 @@ export default function InterviewReport() {
 		<>
 			{report && (
 				<div className="min-h-screen bg-gray-50">
-					<Header />
 					<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 						<div className="mb-8">
 							<h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -128,7 +125,6 @@ export default function InterviewReport() {
 							</button>
 						</div>
 					</main>
-					<Footer />
 				</div>
 			)}
 		</>

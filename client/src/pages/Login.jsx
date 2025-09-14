@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
-import Header from "../components/Header";
 import Toast from "../components/Toast";
 import {useAuth} from "../context/AuthContext"
 import {
@@ -10,9 +9,11 @@ import {
 	signInWithPopup,
 	signInWithEmailAndPassword,
 } from "../firebase";
+import { GithubAuthProvider } from "firebase/auth";
 import axios from "axios";
 
 export default function Login() {
+	const githubProvider = new GithubAuthProvider();
 	const {	user, setUser } = useAuth();
 
 	const [email, setEmail] = useState("");
@@ -149,9 +150,41 @@ export default function Login() {
 		}
 	};
 
+	//for github login
+	const handleGithubLogin = async () => {
+		try {
+			const result = await signInWithPopup(auth, githubProvider);
+			const credential = GithubAuthProvider.credentialFromResult(result);
+			const token = credential.accessToken;
+
+			const idToken = await result.user.getIdToken();
+			await axios.post(
+				`${import.meta.env.VITE_API_URL}/api/auth/login`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${idToken}`,
+					},
+				}
+			);
+
+			setUser(result.user); // Set the authenticated user
+			showToast("Successfully signed in with GitHub!", "success");
+
+			setTimeout(() => {
+				navigate("/");
+			}, 2000);
+		} catch (err) {
+			const msg =
+			err?.code === "auth/account-exists-with-different-credential" 
+				? "An account already exists with the same email using a different sign-in method. Please log in with that provider." 
+				: (err?.message || "An error occurred during GitHub login");
+			showToast(msg, "error");
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-gray-50 min-w-screen">
-			<Header />
 			{toast.show && (
 				<Toast
 					message={toast.message}
@@ -283,7 +316,9 @@ export default function Login() {
 							</div>
 
 							<div className="mt-6 grid grid-cols-2 gap-3">
-								<button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+								<button
+									onClick={handleGithubLogin}
+									className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
 									<FaGithub className="w-4 h-4 mr-2" />
 									Github
 								</button>

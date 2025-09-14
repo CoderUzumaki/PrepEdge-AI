@@ -15,7 +15,6 @@ import {
 	FaCodeBranch,
 	FaHeart,
 } from "react-icons/fa";
-import Header from "../components/Header";
 
 export default function About() {
 	const features = [
@@ -84,7 +83,6 @@ export default function About() {
 	];
 	return (
 		<div className="min-h-screen bg-white">
-			<Header />
 			<section className="py-16 lg:py-20 bg-gradient-to-br from-white via-blue-50 to-green-50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -254,7 +252,7 @@ export default function About() {
 						</p>
 						<div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
 							<a
-								href="https://github.com/yourusername/prepedge-ai"
+								href="https://github.com/coderuzumaki/prepedge-ai"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-gray-600 border-2 text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors"

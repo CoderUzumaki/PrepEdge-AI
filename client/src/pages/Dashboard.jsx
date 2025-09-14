@@ -3,8 +3,6 @@ import axios from "axios";
 import ScoreTrendChart from "../components/ScoreTrendChart";
 import SummaryCard from "../components/SummaryCard";
 import InterviewList from "../components/InterviewList";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
@@ -74,7 +72,6 @@ export default function Dashboard() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<Header />
 
 			<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<div className="mb-8">
@@ -107,7 +104,6 @@ export default function Dashboard() {
 				</div>
 			</main>
 
-			<Footer />
 		</div>
 	);
 }

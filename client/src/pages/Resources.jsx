@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import ResourceCard from "../components/ResourceCard";
 import resources from "../data/resourcesData";
 import featuredResources from "../data/featuredResourcesData";
@@ -8,7 +6,6 @@ import featuredResources from "../data/featuredResourcesData";
 export default function HeroSection() {
 	return (
 		<div>
-			<Header />
 			<section className="relative bg-gradient-to-br from-blue-500 via-green-500 to-emerald-600 overflow-hidden min-h-[600px]">
 				<div className="absolute inset-0">
 					<div className="absolute inset-0 bg-neutral-950 bg-opacity-10"></div>
@@ -180,8 +177,6 @@ export default function HeroSection() {
 					</div>
 				</div>
 			</section>
-
-			<Footer />
 		</div>
 	);
 }

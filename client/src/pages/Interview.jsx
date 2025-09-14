@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Toast from "../components/Toast";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import LoadingScreen from "../components/LoadingScreen";
 import { useAuth } from "../context/AuthContext";
 
@@ -163,7 +161,6 @@ export default function Interview() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<Header />
 			{toast.show && (
 				<Toast
 					message={toast.message}
@@ -274,7 +271,6 @@ export default function Interview() {
 					</div>
 				</div>
 			</main>
-			<Footer />
 		</div>
 	);
 }

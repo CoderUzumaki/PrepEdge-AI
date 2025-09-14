@@ -58,21 +58,21 @@ export default function Header() {
 
   const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
-      <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">Home</Link>
-      <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
+      <Link to="/" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Home</Link>
+      <Link to="/about" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">About</Link>
       {isLoggedIn && (
-        <Link to="/interview/setup" className="text-gray-700 hover:text-gray-900 transition-colors">Practice</Link>
+        <Link to="/interview/setup" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Practice</Link>
       )}
       {isLoggedIn && (
-        <Link to="/dashboard" className="text-gray-700 hover:text-gray-900 transition-colors">Dashboard</Link>
+        <Link to="/dashboard" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Dashboard</Link>
       )}
-      <Link to="/resources" className="text-gray-700 hover:text-gray-900 transition-colors">Resources</Link>
+      <Link to="/resources" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Resources</Link>
     </div>
   )
 
   return (
     <>
-      <header className="bg-white border-b border-gray-200">
+  <header className="sticky top-0 z-50 backdrop-blur-md bg-white/60 border-b border-white/30 shadow-sm transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -98,14 +98,14 @@ export default function Header() {
             <div className="hidden md:flex items-center space-x-4">
               {!isLoggedIn ? (
                 <>
-                  <Link to="/login" className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">Log in</Link>
+                  <Link to="/login" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Log in</Link>
                   <Link to="/signup" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors">Sign up</Link>
                 </>
               ) : (
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={toggleDropdown}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/40 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
                       {user?.avatar ? (
@@ -125,11 +125,11 @@ export default function Header() {
                       </div>
 
                       <div className="py-1">
-                        <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" onClick={() => setIsDropdownOpen(false)}>
+                        <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300" onClick={() => setIsDropdownOpen(false)}>
                           <FaUser className="w-4 h-4 mr-3 text-gray-400" />
                           Profile
                         </Link>
-                        <button onClick={handleLogout} className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left">
+                        <button onClick={handleLogout} className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-white/40 transition-colors duration-300 text-left">
                           <FaSignOutAlt className="w-4 h-4 mr-3 text-gray-400" />
                           Logout
                         </button>
@@ -146,13 +146,13 @@ export default function Header() {
               <NavLinks />
               {!isLoggedIn ? (
                 <div className="space-y-2 pt-2">
-                  <Link to="/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Log in</Link>
+                  <Link to="/login" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Log in</Link>
                   <Link to="/signup" className="block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Sign up</Link>
                 </div>
               ) : (
                 <div className="space-y-2 pt-2">
-                  <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Profile</Link>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Logout</button>
+                  <Link to="/profile" className="block px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Profile</Link>
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 rounded transition-colors duration-300 text-gray-700 hover:text-cyan-500 hover:bg-white/40">Logout</button>
                 </div>
               )}
             </div>
