@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "patch-package",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+
   },
   "keywords": [],
   "author": "",
@@ -26,11 +27,11 @@
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.4",
-    "nodemon": "^3.1.10",
     "pdf-parse": "^1.1.1",
     "streamifier": "^0.1.1"
   },
   "devDependencies": {
+    "nodemon": "^3.1.10",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0"
   }
