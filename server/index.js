@@ -7,7 +7,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-import multer from "multer";
+//import multer from "multer";
 
 // Import Firebase Admin instance (already initialized in firebase.js)
 import admin from "./firebase.js"; 
@@ -16,7 +16,7 @@ import admin from "./firebase.js";
 dotenv.config();
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
+//const upload = multer({ dest: "uploads/" });
 
 // --- Middlewares ---
 app.use(cors({
