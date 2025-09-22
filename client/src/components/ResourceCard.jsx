@@ -28,12 +28,14 @@ export default function ResourceCard({
   link,
   featured = false,
 }) {
+
+
+ 
   const cardContent = (
     <div
       className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group ${
         featured ? "h-full" : ""
-      }`}
-    >
+      }`}>
       <div className="aspect-video bg-gray-100 relative overflow-hidden">
         <img
           src={image || "/placeholder.svg"}
@@ -77,7 +79,8 @@ export default function ResourceCard({
   if (link) {
     return (
 
-      <a href={link} target="_blank" rel="noopener noreferrer" className="block">
+      <a 
+      href={link} target="_blank" rel="noopener noreferrer" className="block">
          {cardContent}
       </a>
 

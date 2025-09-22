@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { variantsContext } from "../context/motionContext";
+import { useContext } from "react";
+import { motion } from "framer-motion";
 
 export default function Animated404() {
-  const [isVisible, setIsVisible] = useState(false)
+  const sharedData = useContext(variantsContext);
+  const { textvariant, paraVariant } = sharedData;
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true)
-  }, [])
+    setIsVisible(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 flex items-center justify-center p-4 overflow-hidden">
@@ -27,9 +32,30 @@ export default function Animated404() {
         </div>
 
         <div className="mb-8 text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">We have a problem!</h2>
-          <p className="text-xl opacity-90 mb-2">The page you're looking for isn't available.</p>
-          <p className="text-lg opacity-75">Let's get you back to Home.</p>
+          <motion.h2
+            initial="hidden"
+            animate="visible"
+            variants={textvariant}
+            className="text-3xl md:text-4xl font-bold mb-4"
+          >
+            We have a problem!
+          </motion.h2>
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            variants={paraVariant}
+            className="text-xl opacity-90 mb-2"
+          >
+            The page you're looking for isn't available.
+          </motion.p>
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            variants={paraVariant}
+            className="text-lg opacity-75"
+          >
+            Let's get you back to Home.
+          </motion.p>
         </div>
 
         <div className="absolute inset-0 pointer-events-none">
@@ -39,26 +65,30 @@ export default function Animated404() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10">
-          <Link
-            href="/"
-            className="px-6 py-3 bg-white text-gray-800 hover:bg-gray-100 shadow-lg rounded-md flex items-center gap-2 text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
-            Return to Home
-          </Link>
+          <motion.div initial="hidden" animate="visible" variants={textvariant}>
+            <Link
+              href="/"
+              className="px-6 py-3 bg-white text-gray-800 hover:bg-gray-100 shadow-lg rounded-md flex items-center gap-2 text-sm font-medium transition-all duration-200 transform hover:scale-105"
+            >
+              Return to Home
+            </Link>
+          </motion.div>
 
-          <Link
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              history.back()
-            }}
-            className="px-6 py-3 border border-white text-white hover:bg-white hover:text-gray-800 shadow-lg rounded-md flex items-center gap-2 text-sm font-medium transition-all duration-200 transform hover:scale-105"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Go Back
-          </Link>
+          <motion.div initial="hidden" animate="visible" variants={textvariant}>
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                history.back();
+              }}
+              className="px-6 py-3 border border-white text-white hover:bg-white hover:text-gray-800 shadow-lg rounded-md flex items-center gap-2 text-sm font-medium transition-all duration-200 transform hover:scale-105"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Go Back
+            </Link>
+          </motion.div>
         </div>
       </div>
     </div>
-  )
+  );
 }
