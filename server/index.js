@@ -7,16 +7,11 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-//import multer from "multer";
-
-// Import Firebase Admin instance
-import admin from "./firebase.js"; 
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-//const upload = multer({ dest: "uploads/" });
 
 // --- Middlewares ---
 app.use(cors({
@@ -24,27 +19,6 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
-
-// --- Protected route middleware ---
-app.use("/api/protected", async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
-
-  try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: "Invalid token" });
-  }
-});
-
-// --- Initialize Firebase Admin SDK ---
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
 
 // --- Connect to database ---
 connectDB()
