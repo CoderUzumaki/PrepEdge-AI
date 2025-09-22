@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 //import multer from "multer";
 
-// Import Firebase Admin instance (already initialized in firebase.js)
+// Import Firebase Admin instance
 import admin from "./firebase.js"; 
 
 // Load environment variables
@@ -37,6 +37,13 @@ app.use("/api/protected", async (req, res, next) => {
   } catch (err) {
     res.status(401).json({ error: "Invalid token" });
   }
+});
+
+// --- Initialize Firebase Admin SDK ---
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
 
 // --- Connect to database ---
