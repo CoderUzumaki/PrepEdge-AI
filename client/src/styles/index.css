@@ -31,3 +31,13 @@ html {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #056896;
 }
+
+:body {
+  background-color: #1a1a1a;
+  color: #f3f4f6;
+}
+
+.dark {
+  background-color: #f3f4f6;
+  color: #1a1a1a;
+}
