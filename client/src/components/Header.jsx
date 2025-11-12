@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { FaUser, FaSignOutAlt, FaChevronDown, FaBars, FaTimes } from "react-icons/fa"
 import { useAuth } from "../context/AuthContext"
 import React from "react"
@@ -10,6 +10,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const dropdownRef = useRef(null)
+  const location = useLocation();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -55,18 +56,53 @@ export default function Header() {
       .toUpperCase()
       .slice(0, 2)
   }
-
-  const NavLinks = () => (
+  const handleNavClick = (to) => {
+    if (location.pathname === to) {
+      
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }
+ const NavLinks = () => (
     <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
-      <Link to="/" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Home</Link>
-      <Link to="/about" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">About</Link>
+      <Link 
+        to="/" 
+        onClick={() => handleNavClick("/")} 
+        className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105"
+      >
+        Home
+      </Link>
+      <Link 
+        to="/about" 
+        onClick={() => handleNavClick("/about")} 
+        className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105"
+      >
+        About
+      </Link>
       {isLoggedIn && (
-        <Link to="/interview/setup" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Practice</Link>
+        <Link 
+          to="/interview/setup" 
+          onClick={() => handleNavClick("/interview/setup")} 
+          className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105"
+        >
+          Practice
+        </Link>
       )}
       {isLoggedIn && (
-        <Link to="/dashboard" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Dashboard</Link>
+        <Link 
+          to="/dashboard" 
+          onClick={() => handleNavClick("/dashboard")} 
+          className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105"
+        >
+          Dashboard
+        </Link>
       )}
-      <Link to="/resources" className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105">Resources</Link>
+      <Link 
+        to="/resources" 
+        onClick={() => handleNavClick("/resources")} 
+        className="px-4 py-2 rounded transition-all duration-200 text-gray-700 hover:text-cyan-500 hover:bg-white/40 hover:scale-105"
+      >
+        Resources
+      </Link>
     </div>
   )
 

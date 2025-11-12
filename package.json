@@ -1,0 +1,26 @@
+{
+  "name": "prepedge-ai",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\"> PrepEdge AI </h1>\r <p align=\"center\"> An AI enabled smart Interview Preparation Platform </p>",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gunjan10-droid/PrepEdge-AI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gunjan10-droid/PrepEdge-AI/issues"
+  },
+  "homepage": "https://github.com/Gunjan10-droid/PrepEdge-AI#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
