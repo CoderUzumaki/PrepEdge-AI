@@ -1,8 +1,39 @@
 import { useState } from "react";
 import axios from "axios";
 import { FaPaperPlane } from "react-icons/fa";
+import { variantsContext } from "../context/motionContext";
+import { useContext } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ContactForm() {
+	const sharedData = useContext(variantsContext);
+  const { textvariant} =
+    sharedData;
+
+		const [showSelect, setShowSelect]=useState(true)
+
+
+
+	const containerVariant={
+		 hidden:{heigh:0, opacity:0},
+    	visible:{heigh:'auto', opacity:1 ,
+            transition:{when:'beforeChildren', delay: 1, duration: 1, ease: "easeOut",
+							delayChildren:0.4, staggerChildren:0.3, staggerDirection:1
+						},
+           },
+			exit:{heigh:0, opacity:0, 
+				transition:{when:'afterChildren', staggerDirection:-1}
+			} 
+	}
+
+	const childVariant={
+			hidden:{x:-20, opacity:0},
+			visible:{x:0, opacity:1,
+				transition:{ease:'easeOut', duration:0.6}
+			}
+	}
+
+
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -81,20 +112,33 @@ export default function ContactForm() {
 
 	return (
 		<div className="bg-white rounded-lg border border-gray-200 p-8 max-w-4xl">
-			<h2 className="text-2xl font-bold text-gray-900 mb-6">
+			<motion.h2 
+			initial="hidden"
+      whileInView="visible"
+      variants={textvariant}
+      viewport={{ amount: 0.5, once: true }}
+			className="text-2xl font-bold text-gray-900 mb-6">
 				Send us a Message
-			</h2>
+			</motion.h2>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<label
+						<motion.label
+							initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							htmlFor="name"
 							className="block text-sm font-medium text-gray-700 mb-2"
 						>
 							Full Name <span className="text-red-600">*</span>
-						</label>
-						<input
+						</motion.label>
+						<motion.input
+						  initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							type="text"
 							id="name"
 							name="name"
@@ -106,14 +150,18 @@ export default function ContactForm() {
 						/>
 					</div>
 					<div>
-						<label
+						<motion.label
+						initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							htmlFor="email"
 							className="block text-sm font-medium text-gray-700 mb-2"
 						>
 							Email Address{" "}
 							<span className="text-red-600">*</span>
-						</label>
-						<input
+						</motion.label>
+						<motion.input
 							type="email"
 							id="email"
 							name="email"
@@ -128,13 +176,21 @@ export default function ContactForm() {
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
-						<label
+						<motion.label
+						initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							htmlFor="category"
 							className="block text-sm font-medium text-gray-700 mb-2"
 						>
 							Category
-						</label>
-						<select
+						</motion.label>
+							<motion.select
+							initial="hidden"
+              animate="visible"
+							exit='exit'
+              variants={containerVariant}
 							id="category"
 							name="category"
 							value={formData.category}
@@ -149,16 +205,25 @@ export default function ContactForm() {
 									{category.label}
 								</option>
 							))}
-						</select>
+						</motion.select>
+						
 					</div>
 					<div>
-						<label
+						<motion.label
+						initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							htmlFor="subject"
 							className="block text-sm font-medium text-gray-700 mb-2"
 						>
 							Subject <span className="text-red-600">*</span>
-						</label>
-						<input
+						</motion.label>
+						<motion.input
+						initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 							type="text"
 							id="subject"
 							name="subject"
@@ -171,13 +236,21 @@ export default function ContactForm() {
 					</div>
 				</div>
 				<div>
-					<label
+					<motion.label
+					initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 						htmlFor="message"
 						className="block text-sm font-medium text-gray-700 mb-2"
 					>
 						Message <span className="text-red-600">*</span>
-					</label>
-					<textarea
+					</motion.label>
+					<motion.textarea
+					initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 						id="message"
 						name="message"
 						value={formData.message}
@@ -188,7 +261,11 @@ export default function ContactForm() {
 						placeholder="Please provide details about your inquiry..."
 					/>
 				</div>
-				<button
+				<motion.button
+							initial="hidden"
+              whileInView="visible"
+              variants={textvariant}
+              viewport={{ amount: 0.5, once: true }}
 					type="submit"
 					disabled={isSubmitting}
 					className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
@@ -204,7 +281,7 @@ export default function ContactForm() {
 							<span>Send Message</span>
 						</>
 					)}
-				</button>
+				</motion.button>
 			</form>
 		</div>
 	);

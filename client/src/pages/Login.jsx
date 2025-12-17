@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGithub, FaGoogle, FaEyeSlash, FaEye } from "react-icons/fa";
 import Toast from "../components/Toast";
@@ -11,8 +11,13 @@ import {
 } from "../firebase";
 import { GithubAuthProvider } from "firebase/auth";
 import axios from "axios";
+import {variantsContext} from '../context/motionContext'
+import {motion} from 'framer-motion'
 
 export default function Login() {
+	const sharedData = useContext(variantsContext);
+	const { sectionVariant, textvariant} = sharedData;
+
 	const githubProvider = new GithubAuthProvider();
 	const {	user, setUser } = useAuth();
 
@@ -184,7 +189,11 @@ export default function Login() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 min-w-screen">
+		<motion.div
+		 initial='hidden'
+		 animate='visible'
+		 variants={sectionVariant}
+		className="min-h-screen bg-gray-50 min-w-screen">
 			{toast.show && (
 				<Toast
 					message={toast.message}
@@ -197,23 +206,35 @@ export default function Login() {
 				<div className="w-full max-w-md">
 					<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
 						<div className="text-center mb-8">
-							<h1 className="text-2xl font-bold text-gray-900">
+							<motion.h1 
+							 initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
+
+							className="text-2xl font-bold text-gray-900">
 								Login to your account
-							</h1>
+							</motion.h1>
 						</div>
 
 						<form
 							className="space-y-6"
 							onSubmit={(e) => e.preventDefault()}
 						>
-							<div>
-								<label
+							<motion.div
+							>
+								<motion.label
+								  initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 									htmlFor="email"
 									className="block text-sm font-medium text-gray-700 mb-1"
 								>
 									Email address
-								</label>
-								<input
+								</motion.label>
+								<motion.input
+								  initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 									id="email"
 									type="email"
 									value={email}
@@ -235,17 +256,23 @@ export default function Login() {
 										Email is required
 									</p>
 								)}
-							</div>
+							</motion.div>
 
 							<div>
-								<label
+								<motion.label
+								 initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 									htmlFor="password"
 									className="block text-sm font-medium text-gray-700 mb-1"
 								>
 									Password
-								</label>
+								</motion.label>
 								<div className="relative">
-									<input
+									<motion.input
+									 initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 										id="password"
 										type={
 											showPassword ? "text" : "password"
@@ -260,6 +287,7 @@ export default function Login() {
 										)}`}
 									/>
 									<button
+									 
 										type="button"
 										onClick={() =>
 											setShowPassword(!showPassword)
@@ -294,13 +322,16 @@ export default function Login() {
 								</div>
 							</div>
 
-							<button
+							<motion.button
+							initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 								type="submit"
 								onClick={handleEmailLogin}
 								className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 							>
 								Login
-							</button>
+							</motion.button>
 						</form>
 
 						<div className="mt-6">
@@ -316,24 +347,34 @@ export default function Login() {
 							</div>
 
 							<div className="mt-6 grid grid-cols-2 gap-3">
-								<button
+								<motion.button
+								initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 									onClick={handleGithubLogin}
 									className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
 									<FaGithub className="w-4 h-4 mr-2" />
 									Github
-								</button>
-								<button
+								</motion.button>
+								<motion.button
+								initial='hidden'
+							 animate='visible'
+							 variants={textvariant}
 									onClick={handleGoogleLogin}
 									className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 								>
 									<FaGoogle className="w-4 h-4 mr-2" />
 									Google
-								</button>
+								</motion.button>
 							</div>
 						</div>
 
 						<div className="mt-6 text-center">
-							<p className="text-sm text-gray-600">
+							<motion.p 
+							initial='hidden'
+							animate='visible'
+							variants={textvariant}
+							className="text-sm text-gray-600">
 								{"Don't have an account? "}
 								<Link
 									to="/signup"
@@ -341,11 +382,11 @@ export default function Login() {
 								>
 									Sign Up
 								</Link>
-							</p>
+							</motion.p>
 						</div>
 					</div>
 				</div>
 			</main>
-		</div>
+		</motion.div>
 	);
 }
