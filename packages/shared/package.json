@@ -1,0 +1,13 @@
+{
+  "name": "@prepedge/shared",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}
