@@ -15,7 +15,6 @@
     <li> <a href='#introduction'> Introduction </a> </li>
     <li> <a href='#features'> Features </a> </li>
     <li> <a href='#tech-stack'> Tech Stack </a> </li>
-    <li> <a href='#demo-screenshots'> Screenshots </a> </li>
     <li> <a href='#contributions'> GSSoC Contribution </a> </li>
     <li> <a href='#author'> Author </a> </li>
   </samp>
@@ -65,32 +64,7 @@
 
 ---
 
-<h2 id='demo-screenshots'> 4. Screenshots 📷 </h2>
-
-| Homepage | About Page |
-|----------|-------------|
-| ![Homepage](./screenshots/home.png) | ![Report](./screenshots/about.png) |
-
-| Interview Setup | Interview Question |
-|----------|-------------|
-| ![Homepage](./screenshots/setup1.png) | ![Report](./screenshots/question1.png) |
-
-| Interview Report | Report Pdf |
-|----------|-------------|
-| ![Homepage](./screenshots/report.png) | ![Report](./screenshots/reportPdf.png) |
-
-| Dashboard |
-|----------|
-| ![Homepage](./screenshots/dashboard1.png) |
-
-| Resources |
-|-------------|
-| ![Resources](./screenshots/resources1.png) |
-
-
----
-
-<h2 id='contributions'> 5. Contribution 🤝 </h2>
+<h2 id='contributions'> 4. Contribution 🤝 </h2>
 <p> 
     <b> Contributions are Welcome! </b>
     <br>
@@ -115,12 +89,12 @@
 
 ---
 
-<h2 id='author'> 6. Author ✍️ </h2>
+<h2 id='author'> 5. Author ✍️ </h2>
 <h3><samp>Abhinav Mishra – <a href="https://github.com/CoderUzumaki">@CoderUzumaki</a></samp></h3>
 
 ---
 
-<h2 id='license'> 7. License 📄 </h2>
+<h2 id='license'> 6. License 📄 </h2>
 <p>
   This project is licensed under the <a href="./LICENSE">MIT License</a>.  
   <br>

@@ -28,7 +28,7 @@ tmp/
 *.tgz
 *.lock
 
-server/config/firebaseServiceAccountKey.json
+**/firebaseServiceAccountKey.json
 
 .env
 
