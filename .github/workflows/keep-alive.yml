@@ -1,0 +1,19 @@
+name: Render Keep-Alive
+
+on:
+  schedule:
+    - cron: "*/14 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render health endpoint
+        run: |
+          if [ -z "${{ secrets.RENDER_API_URL }}" ]; then
+            echo "RENDER_API_URL secret not set, skipping ping"
+            exit 0
+          fi
+          curl -f -s -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" \
+            "${{ secrets.RENDER_API_URL }}/api/health"
