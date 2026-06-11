@@ -8,8 +8,7 @@
     "start": "node index.js",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "postinstall": "patch-package"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
@@ -36,7 +35,6 @@
     "eslint": "^9.25.0",
     "nodemon": "^3.1.10",
     "patch-package": "^8.0.0",
-    "postinstall-postinstall": "^2.1.0",
     "supertest": "^7.1.0",
     "vitest": "^3.2.4"
   }
