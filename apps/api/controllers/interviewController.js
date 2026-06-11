@@ -1,6 +1,6 @@
 import cloudinary from "../utils/cloudinary.js";
 import streamifier from "streamifier";
-import pdfParse from "pdf-parse";
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import * as interviewService from "../services/interviewService.js";
 import * as userService from "../services/userService.js";
 import * as resumeService from "../services/resumeService.js";

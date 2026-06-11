@@ -27,7 +27,7 @@ It empowers job seekers to **prepare better**, **track progress**, and **improve
 | Feature               | Description                                           |
 |----------------------|-------------------------------------------------------|
 | Firebase Auth      | Secure login/signup                                   |
-| AI Evaluation      | Answer assessment using Hugging Face APIs             |
+| AI Evaluation      | Answer assessment with Groq, Gemini, and Hugging Face |
 | PDF Reports        | Auto-generated interview feedback reports             |
 | Role-Based Qs      | Dynamic question generation by domain                 |
 | Resources Page     | Helpful materials for candidates                      |
@@ -36,44 +36,54 @@ It empowers job seekers to **prepare better**, **track progress**, and **improve
 
 ## Tech Stack
 
-### Frontend
+### Frontend (`apps/web`)
 - **React + Vite** – Component-based SPA with fast bundling
 - **TailwindCSS** – Utility-first CSS for responsive design
 - **Firebase Auth** – User authentication and session handling
 
-### Backend
+### Backend (`apps/api`)
 - **Express.js** – REST API handling and routes
 - **MongoDB Atlas** – Cloud-hosted database for storing responses
 - **Firebase Admin SDK** – Securely verifies user identity
 - **Multer** – Handles file uploads (e.g., user resumes)
-- **Hugging Face APIs** – For semantic answer evaluation (NLP)
+- **Groq / Gemini / Hugging Face** – Multi-provider AI with automatic fallback
+
+### Shared (`packages/shared`)
+- **Zod schemas** – Shared request validation for API and web
 
 ---
 
 ## Folder Structure
 
-PrepEdge-AI/  
-│  
-├── client/ # Frontend  
-│ ├── public/  
-│ └── src/  
-│ ├── components/ # Reusable UI components  
-│ ├── pages/ # Main route-based pages  
-│ ├── utils/ # Helper functions  
- |  ├── .env # Environment variables  
-│ └── App.jsx  
-│   
-├── server/ # Backend  
-│ ├── controllers/ # API logic (PDF gen, evaluation)  
-│ ├── routes/ # Express routes  
-│ ├── utils/ # Middleware, PDF generator, validators  
-| ├── .env # Environment variables  
-│ └── index.js  
-│  
-├── README.md  
-├── CODE_OF_CONDUCT.md  
-└── LEARN.md  
-
+```
+PrepEdge-AI/
+├── apps/
+│   ├── api/                 # Backend (Express API)
+│   │   ├── config/          # Env, DB, Firebase
+│   │   ├── controllers/     # Request handlers
+│   │   ├── middleware/      # Auth, validation, errors
+│   │   ├── models/          # Mongoose models
+│   │   ├── providers/       # AI provider integrations
+│   │   ├── routes/          # Express routes
+│   │   ├── services/        # Business logic
+│   │   ├── tests/           # Vitest tests
+│   │   └── index.js         # API entry point
+│   └── web/                 # Frontend (React + Vite)
+│       ├── public/
+│       └── src/
+│           ├── components/  # Reusable UI components
+│           ├── pages/       # Route-based pages
+│           ├── hooks/       # Data-fetching hooks
+│           ├── lib/         # API client, Firebase
+│           └── utils/       # Helper functions
+├── packages/
+│   └── shared/              # Shared Zod schemas & constants
+├── render.yaml              # Render deploy config for API
+├── package.json             # npm workspaces root
+├── README.md
+├── CODE_OF_CONDUCT.md
+└── LEARN.md
+```
 
 ---
 
@@ -81,33 +91,35 @@ PrepEdge-AI/
 
 1. **Fork the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/PrepEdge-AI.git`
+git clone https://github.com/YOUR_USERNAME/PrepEdge-AI.git
 cd PrepEdge-AI
 ```
 
-2. Install dependencies:
+2. Install dependencies from the repo root:
 ```bash
-cd client && npm install
-cd ../server && npm install
+npm install
 ```
 
-3. Create a .env file in /server/ with:
+3. Create `apps/api/.env` with:
 ```bash
-PORT=
-MONGO_URL=
+PORT=5000
+MONGO_URI=
 FIREBASE_SERVICE_ACCOUNT=
+GROQ_API_KEY=
+GEMINI_API_KEY=
+HUGGING_FACE_API_KEY=
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-HUGGING_FACE_API_KEY=
 EMAIL_USER=
 EMAIL_PASS=
 EMAIL_RECEIVER=
+ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-4. Create a .env file in /client/ with:
+4. Create `apps/web/.env` with:
 ```bash
-VITE_API_URL= <Your Backend Url>
+VITE_API_URL=http://localhost:5000
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
@@ -117,15 +129,19 @@ VITE_FIREBASE_API_ID=
 VITE_FIREBASE_MEASUREMENT_ID=
 ```
 
-5. Run the project:
-Run frontend
+5. Run the project from the repo root:
 ```bash
-cd client && npm run dev
+# Frontend + backend together
+npm run dev
+
+# Or run individually
+npm run dev:api
+npm run dev:web
 ```
 
-Run backend
+6. Run tests:
 ```bash
-cd ../server && npm run dev
+npm test
 ```
 
 ## Contribution Tips
@@ -146,9 +162,7 @@ Before contributing, please read and follow our [Code of Conduct](CODE_OF_CONDUC
 
 
 ## Maintainers
-  [Abhinav Mishra](https://github.com/CoderUzumaki) – Project Admin  
-  [Huda Naaz](https://github.com/hudazaan) - Project Mentor  
-  [R Pavan Sarvesh](https://github.com/pavansarvesh) - Project Mentor    
+  [Abhinav Mishra](https://github.com/CoderUzumaki) – Project Admin   
 
 ## Inspiration
 
