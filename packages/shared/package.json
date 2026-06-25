@@ -8,6 +8,6 @@
     ".": "./src/index.js"
   },
   "dependencies": {
-    "zod": "^3.24.2"
+    "zod": "^4.4.3"
   }
 }
