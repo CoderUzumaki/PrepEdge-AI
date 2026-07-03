@@ -20,6 +20,7 @@ export const env = isTest
       EMAIL_USER: "",
       EMAIL_PASS: "",
       EMAIL_RECEIVER: "",
+      DEMO_FIREBASE_UID: "",
       ALLOWED_ORIGINS: "http://localhost:5173",
     }
   : cleanEnv(process.env, {
@@ -37,6 +38,7 @@ export const env = isTest
   EMAIL_PASS: str({ default: "" }),
   EMAIL_RECEIVER: str({ default: "" }),
   ALLOWED_ORIGINS: str({ default: "http://localhost:5173,https://prepedgeai.vercel.app" }),
+  DEMO_FIREBASE_UID: str({ default: "" }),
 });
 
 export const allowedOrigins = env.ALLOWED_ORIGINS.split(",")

@@ -13,9 +13,18 @@ export const interviewSetupSchema = z.object({
   focusAt: z.string().max(500).optional().default(""),
 });
 
+export const speechMetricsSchema = z.object({
+  wordCount: z.number().int().min(0),
+  fillerCount: z.number().int().min(0),
+  wordsPerMinute: z.number().min(0),
+  durationSeconds: z.number().min(0).optional(),
+  fillerWords: z.array(z.string()).max(50).optional().default([]),
+});
+
 export const submitAnswerSchema = z.object({
   questionIndex: z.coerce.number().int().min(0),
   answer: z.string().min(1).max(10000),
+  speechMetrics: speechMetricsSchema.optional(),
 });
 
 export const updateInterviewProgressSchema = z.object({

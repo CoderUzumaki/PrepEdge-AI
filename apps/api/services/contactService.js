@@ -1,10 +1,20 @@
+/**
+ * @module services/contactService
+ * @description Contact form email delivery via Gmail SMTP.
+ */
+
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
-import { AppError } from "../middleware/errorHandler.js";
+import { AppError, ERROR_CODES } from "@prepedge/shared";
 
+/**
+ * Sends a contact form message to the configured inbox.
+ * @param {Object} data - Validated contact form payload
+ * @returns {Promise<void>}
+ */
 export const sendContactEmail = async (data) => {
   if (!env.EMAIL_USER || !env.EMAIL_PASS) {
-    throw new AppError("Email service not configured", 503);
+    throw AppError.fromCode(ERROR_CODES.UPSTREAM_FAILURE, "Email service not configured");
   }
 
   const transporter = nodemailer.createTransport({

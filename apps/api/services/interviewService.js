@@ -1,3 +1,8 @@
+/**
+ * @module services/interviewService
+ * @description Business logic for interview lifecycle: setup, answers, scoring, analytics.
+ */
+
 import Interview from "../models/InterviewModel.js";
 import Report from "../models/ReportModel.js";
 import {
@@ -6,9 +11,19 @@ import {
   generateInterviewSummary,
   generatePracticeQuestion,
 } from "../providers/ai/index.js";
-import { AppError } from "../middleware/errorHandler.js";
+import { AppError, ERROR_CODES } from "@prepedge/shared";
+import { log } from "../utils/logger.js";
 
-export const createInterview = async (userId, data, resumeLink, resumeSummary) => {
+/**
+ * Creates an interview and kicks off async question generation.
+ * @param {string} userId - MongoDB user ID
+ * @param {Object} data - Validated interview setup payload
+ * @param {string|null} resumeLink - Cloudinary URL if uploaded
+ * @param {string|null} resumeSummary - Parsed resume summary
+ * @param {string|null} [requestId] - Correlation ID from HTTP middleware
+ * @returns {Promise<import("../models/InterviewModel.js").default>}
+ */
+export const createInterview = async (userId, data, resumeLink, resumeSummary, requestId = null) => {
   const interview = new Interview({
     user_id: userId,
     interview_name: data.interviewName,
@@ -27,11 +42,22 @@ export const createInterview = async (userId, data, resumeLink, resumeSummary) =
   });
   await interview.save();
 
-  generateQuestionsAsync(interview._id.toString());
+  generateQuestionsAsync(interview._id.toString(), requestId);
   return interview;
 };
 
-const generateQuestionsAsync = async (interviewId) => {
+/**
+ * @param {string} interviewId
+ * @param {string|null} [requestId]
+ */
+const generateQuestionsAsync = async (interviewId, requestId = null) => {
+  const start = Date.now();
+  const meta = {
+    requestId,
+    module: "interviewService",
+    route: "async/generateQuestions",
+  };
+
   try {
     const interview = await Interview.findById(interviewId);
     if (!interview) return;
@@ -51,12 +77,28 @@ const generateQuestionsAsync = async (interviewId) => {
     interview.questions = questions;
     interview.status = "ready";
     await interview.save();
+
+    log("info", "Questions generated", {
+      ...meta,
+      durationMs: Date.now() - start,
+      statusCode: 200,
+    });
   } catch (err) {
-    console.error("Question generation failed:", err);
+    log("error", "Question generation failed", {
+      ...meta,
+      durationMs: Date.now() - start,
+      errorDetail: err.message,
+    });
     await Interview.findByIdAndUpdate(interviewId, { status: "draft" });
   }
 };
 
+/**
+ * Creates a single-question practice interview.
+ * @param {string} userId
+ * @param {Object} data - Validated practice payload
+ * @returns {Promise<import("../models/InterviewModel.js").default>}
+ */
 export const createPracticeInterview = async (userId, data) => {
   const question = await generatePracticeQuestion({
     role: data.role,
@@ -65,7 +107,9 @@ export const createPracticeInterview = async (userId, data) => {
     topic: data.topic,
   });
 
-  if (!question) throw new AppError("Failed to generate practice question", 500);
+  if (!question) {
+    throw AppError.fromCode(ERROR_CODES.INTERNAL_ERROR, "Failed to generate practice question");
+  }
 
   const interview = new Interview({
     user_id: userId,
@@ -82,15 +126,28 @@ export const createPracticeInterview = async (userId, data) => {
   return interview;
 };
 
+/**
+ * @param {string} id
+ * @returns {Promise<import("../models/InterviewModel.js").default>}
+ */
 export const getInterviewById = async (id) => {
   const interview = await Interview.findById(id);
-  if (!interview) throw new AppError("Interview not found", 404);
+  if (!interview) throw AppError.fromCode(ERROR_CODES.NOT_FOUND, "Interview not found");
   return interview;
 };
 
+/**
+ * @param {string} userId
+ * @returns {Promise<import("../models/InterviewModel.js").default[]>}
+ */
 export const listUserInterviews = async (userId) =>
   Interview.find({ user_id: userId }).sort({ created_at: -1 });
 
+/**
+ * @param {import("../models/InterviewModel.js").default} interview
+ * @param {Object} updates
+ * @returns {Promise<import("../models/InterviewModel.js").default>}
+ */
 export const updateInterviewProgress = async (interview, updates) => {
   if (updates.currentQuestionIndex !== undefined) {
     interview.current_question_index = updates.currentQuestionIndex;
@@ -102,9 +159,24 @@ export const updateInterviewProgress = async (interview, updates) => {
   return interview;
 };
 
-export const submitAnswer = async (interview, questionIndex, answer) => {
+/**
+ * Records an answer and starts async AI scoring.
+ * @param {import("../models/InterviewModel.js").default} interview
+ * @param {number} questionIndex
+ * @param {string} answer
+ * @param {string|null} [requestId]
+ * @param {Object|null} [speechMetrics]
+ * @returns {Promise<import("../models/ReportModel.js").default>}
+ */
+export const submitAnswer = async (
+  interview,
+  questionIndex,
+  answer,
+  requestId = null,
+  speechMetrics = null
+) => {
   const question = interview.questions[questionIndex];
-  if (!question) throw new AppError("Invalid question index", 400);
+  if (!question) throw AppError.fromCode(ERROR_CODES.VALIDATION_ERROR, "Invalid question index");
 
   let report = await Report.findOne({ interviewId: interview._id });
   if (!report) {
@@ -121,12 +193,14 @@ export const submitAnswer = async (interview, questionIndex, answer) => {
     existing.scoringStatus = "pending";
     existing.score = null;
     existing.feedback = null;
+    if (speechMetrics) existing.speechMetrics = speechMetrics;
   } else {
     report.answers.push({
       question: question.question,
       userAnswer: answer,
       preferredAnswer: question.preferred_answer,
       scoringStatus: "pending",
+      ...(speechMetrics && { speechMetrics }),
     });
   }
 
@@ -138,13 +212,27 @@ export const submitAnswer = async (interview, questionIndex, answer) => {
     await interview.save();
   }
 
-  scoreAnswerAsync(interview, report._id.toString(), questionIndex, answer);
+  scoreAnswerAsync(interview, report._id.toString(), questionIndex, answer, requestId);
 
   return report;
 };
 
-const scoreAnswerAsync = async (interview, reportId, questionIndex, answer) => {
+/**
+ * @param {import("../models/InterviewModel.js").default} interview
+ * @param {string} reportId
+ * @param {number} questionIndex
+ * @param {string} answer
+ * @param {string|null} [requestId]
+ */
+const scoreAnswerAsync = async (interview, reportId, questionIndex, answer, requestId = null) => {
   const question = interview.questions[questionIndex];
+  const start = Date.now();
+  const meta = {
+    requestId,
+    module: "interviewService",
+    route: "async/scoreAnswer",
+  };
+
   try {
     const result = await analyzeAnswer({
       question: question.question,
@@ -169,12 +257,22 @@ const scoreAnswerAsync = async (interview, reportId, questionIndex, answer) => {
     const allScored = report.answers.every((a) => a.scoringStatus === "scored");
 
     if (allSubmitted && allScored) {
-      await finalizeReport(interview, report);
+      await finalizeReport(interview, report, requestId);
     } else {
       await report.save();
     }
+
+    log("info", "Answer scored", {
+      ...meta,
+      durationMs: Date.now() - start,
+      statusCode: 200,
+    });
   } catch (err) {
-    console.error("Answer scoring failed:", err);
+    log("error", "Answer scoring failed", {
+      ...meta,
+      durationMs: Date.now() - start,
+      errorDetail: err.message,
+    });
     const report = await Report.findById(reportId);
     const answerEntry = report?.answers.find((a) => a.question === question.question);
     if (answerEntry) {
@@ -185,7 +283,19 @@ const scoreAnswerAsync = async (interview, reportId, questionIndex, answer) => {
   }
 };
 
-const finalizeReport = async (interview, report) => {
+/**
+ * @param {import("../models/InterviewModel.js").default} interview
+ * @param {import("../models/ReportModel.js").default} report
+ * @param {string|null} [requestId]
+ */
+const finalizeReport = async (interview, report, requestId = null) => {
+  const start = Date.now();
+  const meta = {
+    requestId,
+    module: "interviewService",
+    route: "async/finalizeReport",
+  };
+
   report.summaryStatus = "generating";
   await report.save();
 
@@ -205,8 +315,18 @@ const finalizeReport = async (interview, report) => {
     report.strengths = summary.strengths;
     report.areaOfImprovement = summary.areaOfImprovement;
     report.summaryStatus = "completed";
+
+    log("info", "Report summary generated", {
+      ...meta,
+      durationMs: Date.now() - start,
+      statusCode: 200,
+    });
   } catch (err) {
-    console.error("Summary generation failed:", err);
+    log("error", "Summary generation failed", {
+      ...meta,
+      durationMs: Date.now() - start,
+      errorDetail: err.message,
+    });
     report.summaryStatus = "failed";
     report.summary = "Summary could not be generated.";
   }
@@ -215,6 +335,10 @@ const finalizeReport = async (interview, report) => {
   await Promise.all([report.save(), interview.save()]);
 };
 
+/**
+ * @param {string} interviewId
+ * @returns {Promise<Object>}
+ */
 export const getScoringStatus = async (interviewId) => {
   const report = await Report.findOne({ interviewId });
   if (!report) {
@@ -235,6 +359,10 @@ export const getScoringStatus = async (interviewId) => {
   };
 };
 
+/**
+ * @param {string} userId
+ * @returns {Promise<Object>}
+ */
 export const getDashboardAnalytics = async (userId) => {
   const reports = await Report.find({ userId, finalScore: { $ne: null } })
     .populate("interviewId")

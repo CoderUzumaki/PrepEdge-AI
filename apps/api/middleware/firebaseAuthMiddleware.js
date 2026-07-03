@@ -1,10 +1,11 @@
 import admin from "../config/firebase.js";
+import { ERROR_CODES } from "@prepedge/shared";
 
 const firebaseAuthMiddleware = async (req, res, next) => {
   const idToken = req.headers.authorization?.split("Bearer ")[1];
 
   if (!idToken) {
-    return res.status(401).json({ error: "Unauthorized: Token missing" });
+    return res.fail(ERROR_CODES.UNAUTHORIZED, "Unauthorized: Token missing");
   }
 
   try {
@@ -12,7 +13,7 @@ const firebaseAuthMiddleware = async (req, res, next) => {
     req.firebaseUser = decodedToken;
     next();
   } catch {
-    return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+    return res.fail(ERROR_CODES.UNAUTHORIZED, "Unauthorized: Invalid or expired token");
   }
 };
 

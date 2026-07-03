@@ -2,20 +2,25 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "@/pages/Home";
-import Login from "@/pages/Login";
-import SignUp from "@/pages/SignUp";
-import Dashboard from "@/pages/Dashboard";
-import CreateInterview from "@/pages/CreateInterview";
-import Interview from "@/pages/Interview";
-import Report from "@/pages/Report";
-import Profile from "@/pages/Profile";
-import Practice from "@/pages/Practice";
-import Resources from "@/pages/Resources";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Privacy from "@/pages/Privacy";
-import Terms from "@/pages/Terms";
-import NotFound from "@/pages/NotFound";
+import {
+  LazyPage,
+  Login,
+  SignUp,
+  Dashboard,
+  CreateInterview,
+  TemplateStart,
+  Interview,
+  Report,
+  PublicReport,
+  Profile,
+  Practice,
+  Resources,
+  About,
+  Contact,
+  Privacy,
+  Terms,
+  NotFound,
+} from "@/routes/lazyPages";
 
 const router = createBrowserRouter([
   {
@@ -23,20 +28,22 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      { path: "login", element: <Login /> },
-      { path: "signup", element: <SignUp /> },
-      { path: "dashboard", element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
-      { path: "profile", element: <ProtectedRoute><Profile /></ProtectedRoute> },
-      { path: "practice", element: <ProtectedRoute><Practice /></ProtectedRoute> },
-      { path: "interview/setup", element: <ProtectedRoute><CreateInterview /></ProtectedRoute> },
-      { path: "interview/:interviewId", element: <ProtectedRoute><Interview /></ProtectedRoute> },
-      { path: "interview/report/:interviewId", element: <ProtectedRoute><Report /></ProtectedRoute> },
-      { path: "resources", element: <Resources /> },
-      { path: "about", element: <About /> },
-      { path: "contact", element: <Contact /> },
-      { path: "privacy", element: <Privacy /> },
-      { path: "terms", element: <Terms /> },
-      { path: "*", element: <NotFound /> },
+      { path: "login", element: <LazyPage><Login /></LazyPage> },
+      { path: "signup", element: <LazyPage><SignUp /></LazyPage> },
+      { path: "dashboard", element: <LazyPage><ProtectedRoute><Dashboard /></ProtectedRoute></LazyPage> },
+      { path: "profile", element: <LazyPage><ProtectedRoute><Profile /></ProtectedRoute></LazyPage> },
+      { path: "practice", element: <LazyPage><ProtectedRoute><Practice /></ProtectedRoute></LazyPage> },
+      { path: "interview/setup", element: <LazyPage><ProtectedRoute><CreateInterview /></ProtectedRoute></LazyPage> },
+      { path: "interview/template/:templateId", element: <LazyPage><ProtectedRoute><TemplateStart /></ProtectedRoute></LazyPage> },
+      { path: "interview/:interviewId", element: <LazyPage><ProtectedRoute><Interview /></ProtectedRoute></LazyPage> },
+      { path: "interview/report/:interviewId", element: <LazyPage><ProtectedRoute><Report /></ProtectedRoute></LazyPage> },
+      { path: "report/public/:token", element: <LazyPage><PublicReport /></LazyPage> },
+      { path: "resources", element: <LazyPage><Resources /></LazyPage> },
+      { path: "about", element: <LazyPage><About /></LazyPage> },
+      { path: "contact", element: <LazyPage><Contact /></LazyPage> },
+      { path: "privacy", element: <LazyPage><Privacy /></LazyPage> },
+      { path: "terms", element: <LazyPage><Terms /></LazyPage> },
+      { path: "*", element: <LazyPage><NotFound /></LazyPage> },
     ],
   },
 ]);

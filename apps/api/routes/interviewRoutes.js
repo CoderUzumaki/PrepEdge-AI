@@ -1,6 +1,5 @@
 import express from "express";
 import multer from "multer";
-import rateLimit from "express-rate-limit";
 import {
   interviewSetupSchema,
   submitAnswerSchema,
@@ -8,26 +7,29 @@ import {
   practiceQuestionSchema,
 } from "@prepedge/shared";
 import firebaseAuthMiddleware from "../middleware/firebaseAuthMiddleware.js";
+import { blockDemoWrites } from "../middleware/demoReadOnly.js";
 import { validate } from "../middleware/validate.js";
 import { requireInterviewOwner } from "../middleware/ownerMiddleware.js";
+import { createRateLimiter } from "../middleware/rateLimit.js";
 import * as interviewController from "../controllers/interviewController.js";
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 
-const setupLimiter = rateLimit({
+const setupLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { error: "Too many interview setups, try again later" },
+  message: "Too many interview setups, try again later",
 });
 
-const answerLimiter = rateLimit({
+const answerLimiter = createRateLimiter({
   windowMs: 60 * 1000,
   max: 30,
-  message: { error: "Too many answer submissions" },
+  message: "Too many answer submissions",
 });
 
 router.use(firebaseAuthMiddleware);
+router.use(blockDemoWrites);
 
 router.post(
   "/setup",

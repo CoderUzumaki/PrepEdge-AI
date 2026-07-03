@@ -9,5 +9,14 @@ export const reportAnswerSchema = z.object({
   feedback: z.string().nullable().optional(),
   scoringStatus: z.enum(SCORING_STATUSES).default("pending"),
   tags: z.array(z.string()).optional().default([]),
+  speechMetrics: z
+    .object({
+      wordCount: z.number().optional(),
+      fillerCount: z.number().optional(),
+      wordsPerMinute: z.number().optional(),
+      durationSeconds: z.number().optional(),
+      fillerWords: z.array(z.string()).optional(),
+    })
+    .optional(),
   scoredAt: z.date().optional(),
 });

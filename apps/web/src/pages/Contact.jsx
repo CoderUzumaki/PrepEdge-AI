@@ -1,10 +1,12 @@
 import { useState } from "react";
 import api from "@/lib/api/client";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageSeo } from "@/components/seo/PageSeo";
 import Toast from "@/components/Toast";
 
 export default function Contact() {
@@ -20,7 +22,7 @@ export default function Contact() {
       setToast({ show: true, message: "Message sent successfully!", type: "success" });
       setForm({ name: "", email: "", subject: "", category: "General", message: "" });
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Failed to send", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Failed to send"), type: "error" });
     } finally {
       setLoading(false);
     }
@@ -28,6 +30,11 @@ export default function Contact() {
 
   return (
     <div className="container mx-auto max-w-lg px-4 py-12">
+      <PageSeo
+        title="Contact"
+        description="Contact the PrepEdge AI team for support, feedback, or partnership inquiries."
+        path="/contact"
+      />
       <h1 className="text-3xl font-bold mb-8">Contact Us</h1>
       <Card>
         <CardHeader><CardTitle>Send a Message</CardTitle></CardHeader>

@@ -47,8 +47,12 @@ export function useScoringStatus(id, enabled = true) {
 export function useSubmitAnswer(interviewId) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ questionIndex, answer }) =>
-      (await api.post(`/api/interviews/${interviewId}/answers`, { questionIndex, answer })).data,
+    mutationFn: async ({ questionIndex, answer, speechMetrics }) =>
+      (await api.post(`/api/interviews/${interviewId}/answers`, {
+        questionIndex,
+        answer,
+        ...(speechMetrics && { speechMetrics }),
+      })).data,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scoring-status", interviewId] });
     },
@@ -69,13 +73,20 @@ export function useSetupInterview() {
       (await api.post("/api/interviews/setup", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })).data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["interviews"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["interviews"] });
+      queryClient.invalidateQueries({ queryKey: ["user-quotas"] });
+    },
   });
 }
 
 export function usePracticeQuestion() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data) =>
       (await api.post("/api/interviews/practice", data)).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-quotas"] });
+    },
   });
 }

@@ -7,21 +7,24 @@ import {
   useUpdateProgress,
 } from "@/hooks/useInterview";
 import { useAuth } from "@/context/AuthContext";
+import { useQuotas } from "@/hooks/useQuotas";
+import { RecordingControls } from "@/components/interview/RecordingControls";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Toast from "@/components/Toast";
-import { Mic, MicOff, ArrowRight, Pause, Volume2 } from "lucide-react";
-import { analyzeSpeech } from "@/utils/speechAnalysis";
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+import { getErrorMessage } from "@/lib/api/errors";
+import { trackEvent } from "@/lib/analytics";
+import { analyzeTranscript } from "@/utils/speechAnalysis";
+import { ArrowRight, Pause, Volume2 } from "lucide-react";
 
 export default function Interview() {
   const { interviewId } = useParams();
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const { data: quotas } = useQuotas();
   const { data: qData, isLoading } = useInterviewQuestions(interviewId);
   const submitAnswer = useSubmitAnswer(interviewId);
   const updateProgress = useUpdateProgress(interviewId);
@@ -29,15 +32,15 @@ export default function Interview() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answer, setAnswer] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [analyzedWords, setAnalyzedWords] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [speechDuration, setSpeechDuration] = useState(0);
+  const [speechMetrics, setSpeechMetrics] = useState(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "error" });
   const [submitting, setSubmitting] = useState(false);
 
   const ttsEnabled = profile?.preferences?.ttsEnabled ?? false;
   const questions = qData?.questions || [];
   const question = questions[currentIndex];
+  const sttAtLimit = quotas?.stt_day?.remaining === 0;
 
   useEffect(() => {
     if (qData?.currentQuestionIndex) setCurrentIndex(qData.currentQuestionIndex);
@@ -50,51 +53,36 @@ export default function Interview() {
     }
   }, [currentIndex, question?.question, ttsEnabled]);
 
-  const startRecording = useCallback(() => {
-    if (!SpeechRecognition) {
-      setToast({ show: true, message: "Speech recognition not supported in this browser", type: "error" });
-      return;
-    }
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    const words = [];
+  useEffect(() => {
+    setSpeechMetrics(analyzeTranscript(answer, speechDuration));
+  }, [answer, speechDuration]);
 
-    recognition.onresult = (event) => {
-      let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-        words.push({ word: event.results[i][0].transcript, confidence: event.results[i][0].confidence });
-      }
-      setAnswer((prev) => prev + transcript);
-      const result = analyzeSpeech(words);
-      setAnalyzedWords(result.analyzedWords);
-      setStats(result.stats);
-    };
-
-    recognition.onerror = () => setIsRecording(false);
-    recognition.onend = () => setIsRecording(false);
-    recognition.start();
-    setIsRecording(true);
+  const appendTranscript = useCallback((text) => {
+    setAnswer((prev) => (prev ? `${prev.trim()} ${text.trim()}` : text.trim()));
   }, []);
 
   const handleSubmit = async () => {
     if (!answer.trim()) return;
     setSubmitting(true);
     try {
-      await submitAnswer.mutateAsync({ questionIndex: currentIndex, answer });
+      await submitAnswer.mutateAsync({
+        questionIndex: currentIndex,
+        answer: answer.trim(),
+        speechMetrics: speechMetrics ?? undefined,
+      });
       await updateProgress.mutateAsync({ currentQuestionIndex: currentIndex + 1 });
 
       if (currentIndex + 1 >= questions.length) {
+        trackEvent("interview_complete");
         navigate(`/interview/report/${interviewId}`);
       } else {
         setCurrentIndex((i) => i + 1);
         setAnswer("");
-        setAnalyzedWords([]);
-        setStats(null);
+        setSpeechDuration(0);
+        setSpeechMetrics(null);
       }
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Submit failed", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Submit failed"), type: "error" });
     } finally {
       setSubmitting(false);
     }
@@ -132,50 +120,57 @@ export default function Interview() {
     <div className="container mx-auto max-w-3xl px-4 py-8">
       <div className="flex items-center justify-between mb-4">
         <Badge variant="secondary">Question {currentIndex + 1} of {questions.length}</Badge>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handlePause}>
-            <Pause size={14} /> Save & Exit
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={handlePause}>
+          <Pause size={14} /> Save & Exit
+        </Button>
       </div>
 
       <div className="w-full bg-[var(--color-secondary)] rounded-full h-2 mb-6">
-        <div className="bg-[var(--color-primary)] h-2 rounded-full transition-all" style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }} />
+        <div
+          className="bg-[var(--color-primary)] h-2 rounded-full transition-all"
+          style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+        />
       </div>
 
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-start justify-between">
           <CardTitle className="text-lg leading-relaxed">{question?.question}</CardTitle>
           {ttsEnabled && (
-            <Button variant="ghost" size="icon" onClick={() => {
-              const u = new SpeechSynthesisUtterance(question.question);
-              window.speechSynthesis.speak(u);
-            }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Read question aloud"
+              onClick={() => {
+                const u = new SpeechSynthesisUtterance(question.question);
+                window.speechSynthesis.speak(u);
+              }}
+            >
               <Volume2 size={18} />
             </Button>
           )}
         </CardHeader>
         <CardContent className="space-y-4">
+          <RecordingControls
+            onTranscript={appendTranscript}
+            onDuration={setSpeechDuration}
+            disabled={sttAtLimit}
+            onError={(message) => setToast({ show: true, message, type: "error" })}
+          />
+
           <Textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type or record your answer..."
+            placeholder="Type or record your answer. Edit the transcript before submitting."
             rows={6}
           />
 
-          {analyzedWords.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {analyzedWords.map((w, i) => (
-                <span key={i} className={`text-xs px-1 rounded ${w.level === "high" ? "bg-emerald-100 text-emerald-800" : w.level === "medium" ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}>
-                  {w.word}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {stats && (
+          {speechMetrics && speechMetrics.wordCount > 0 && (
             <p className="text-xs text-[var(--color-muted)]">
-              Confidence: {stats.avgConfidence}% · Words: {stats.wordCount}
+              {speechMetrics.wordCount} words
+              {speechMetrics.wordsPerMinute > 0 ? ` · ~${speechMetrics.wordsPerMinute} wpm` : ""}
+              {speechMetrics.fillerCount > 0
+                ? ` · ${speechMetrics.fillerCount} filler${speechMetrics.fillerCount === 1 ? "" : "s"}`
+                : ""}
             </p>
           )}
 
@@ -183,15 +178,10 @@ export default function Interview() {
             <Badge variant="outline">Scoring in progress...</Badge>
           )}
 
-          <div className="flex gap-3">
-            <Button variant={isRecording ? "destructive" : "outline"} onClick={isRecording ? () => setIsRecording(false) : startRecording}>
-              {isRecording ? <><MicOff size={16} /> Stop</> : <><Mic size={16} /> Record</>}
-            </Button>
-            <Button onClick={handleSubmit} disabled={submitting || !answer.trim()} className="flex-1">
-              {submitting ? "Submitting..." : currentIndex + 1 >= questions.length ? "Finish Interview" : "Next Question"}
-              <ArrowRight size={16} />
-            </Button>
-          </div>
+          <Button onClick={handleSubmit} disabled={submitting || !answer.trim()} className="w-full">
+            {submitting ? "Submitting..." : currentIndex + 1 >= questions.length ? "Finish Interview" : "Next Question"}
+            <ArrowRight size={16} />
+          </Button>
         </CardContent>
       </Card>
       <Toast show={toast.show} message={toast.message} type={toast.type} onClose={() => setToast((t) => ({ ...t, show: false }))} />
