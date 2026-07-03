@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `f7d0620` |
-| **Latest module** | M2 — Usage caps (**done**, merged into `v2`) |
-| **Next module** | **M3 — AI security** |
+| **Integration branch** | `v2` (pending M3 merge) |
+| **Latest module** | M3 — AI security (**done**, on `v2-M3-ai-security`) |
+| **Next module** | **M4 — STT** or **M5 — Templates** (parallel after M3) |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -48,7 +48,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
 | **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`7a2ea0f`) |
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | yes (`f7d0620`) |
-| **M3** | AI security | `v2-M3-ai-security` | M0 | pending | — |
+| **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | pending merge |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | pending | — |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | pending | — |
@@ -191,6 +191,14 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M3 complete
+
+- **Agent session:** AI security — input sanitizer, hardened prompts, output validation
+- **Branch:** `v2-M3-ai-security`
+- **Done:** inputSanitizer, delimiter prompts, validateOutput, guardrail_violation/upstream_failure, 20 new tests
+- **Verified:** `npm run lint` + `npm test` (55 tests) green
+- **Next:** Merge M3 into `v2`; start M4 STT or M5 templates
 
 ### 2026-07-03 — M2 complete
 

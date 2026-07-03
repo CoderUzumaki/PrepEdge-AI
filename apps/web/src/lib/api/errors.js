@@ -144,6 +144,14 @@ export const getErrorMessage = (err, fallback = "Something went wrong") => {
       return err.message || "You've hit a usage limit. Please try again later.";
     }
 
+    if (err.code === "guardrail_violation") {
+      return err.message || "Your input could not be processed. Please revise and try again.";
+    }
+
+    if (err.code === "upstream_failure") {
+      return err.message || "AI service is temporarily unavailable. Please try again.";
+    }
+
     return err.message || fallback;
   }
 

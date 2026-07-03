@@ -7,3 +7,4 @@ export * from "./constants.js";
 export * from "./errors/index.js";
 export * from "./quota/periods.js";
 export * from "./quota/caps.js";
+export * from "./sanitizer/inputSanitizer.js";
