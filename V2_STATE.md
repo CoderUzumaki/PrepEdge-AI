@@ -51,7 +51,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | yes (`d6271d3`) |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
-| **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | pending merge |
+| **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | pending | — |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
@@ -279,7 +279,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## M6 — Reports & share (completed)
 
 **Branch:** `v2-M6-reports` → merge into `v2`  
-**Commit:** _(pending merge)_
+**Commit:** `d1821ea` — `feat(m6): add report sharing, enhanced PDF, ScoreRing, and account deletion`
 
 ### What was built
 
@@ -329,11 +329,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 Agents: **append new entries at the top** (newest first).
 
-### 2026-07-03 — M6 complete (pending merge)
+### 2026-07-03 — M6 complete
 
 - **Agent session:** Reports & share — ScoreRing, speech summary, public share links, PDF enhancement, account deletion
-- **Branch:** `v2-M6-reports`
-- **Next:** Merge into `v2`, then M7 recruiter demo
+- **Branch:** `v2-M6-reports` → merged into `v2`
+- **Commit:** `d1821ea`
+- **Next:** M7 recruiter demo (`v2-M7-recruiter-demo`)
 
 ### 2026-07-03 — M5 complete
 
