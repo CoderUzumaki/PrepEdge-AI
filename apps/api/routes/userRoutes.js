@@ -9,4 +9,5 @@ router.use(firebaseAuthMiddleware);
 router.get("/me", userController.getMe);
 router.get("/me/quotas", userController.getMyQuotas);
 router.patch("/me", validate(updateUserSchema), userController.updateMe);
+router.delete("/me", userController.deleteMe);
 export default router;

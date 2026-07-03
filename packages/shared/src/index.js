@@ -10,3 +10,4 @@ export * from "./quota/periods.js";
 export * from "./quota/caps.js";
 export * from "./sanitizer/inputSanitizer.js";
 export * from "./speech/analyzeTranscript.js";
+export * from "./speech/speechSummary.js";

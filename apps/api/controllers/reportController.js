@@ -1,6 +1,6 @@
 /**
  * @module controllers/reportController
- * @description Report listing and retrieval for authenticated users.
+ * @description Report listing, retrieval, and sharing for authenticated users.
  */
 
 import mongoose from "mongoose";
@@ -13,9 +13,6 @@ const isValidObjectId = (id) =>
 
 /**
  * GET /api/reports
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
  */
 export const listReports = async (req, res, next) => {
   try {
@@ -29,9 +26,6 @@ export const listReports = async (req, res, next) => {
 
 /**
  * GET /api/reports/:interviewId
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
  */
 export const getReport = async (req, res, next) => {
   try {
@@ -45,6 +39,59 @@ export const getReport = async (req, res, next) => {
       user._id.toString()
     );
     res.success(report);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * GET /api/reports/public/:token
+ */
+export const getPublicReport = async (req, res, next) => {
+  try {
+    const report = await reportService.getPublicReportByToken(req.params.token);
+    res.success(report);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /api/reports/:interviewId/share
+ */
+export const enableShare = async (req, res, next) => {
+  try {
+    if (!isValidObjectId(req.params.interviewId)) {
+      throw AppError.fromCode(ERROR_CODES.VALIDATION_ERROR, "Invalid interview ID");
+    }
+
+    const user = await userService.getUserByFirebaseId(req.firebaseUser.uid);
+    const report = await reportService.enableReportShare(
+      req.params.interviewId,
+      user._id.toString()
+    );
+
+    res.success({
+      shareToken: report.shareToken,
+      shareExpiresAt: report.shareExpiresAt,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * DELETE /api/reports/:interviewId/share
+ */
+export const disableShare = async (req, res, next) => {
+  try {
+    if (!isValidObjectId(req.params.interviewId)) {
+      throw AppError.fromCode(ERROR_CODES.VALIDATION_ERROR, "Invalid interview ID");
+    }
+
+    const user = await userService.getUserByFirebaseId(req.firebaseUser.uid);
+    await reportService.disableReportShare(req.params.interviewId, user._id.toString());
+    res.success({ message: "Share link revoked" });
   } catch (err) {
     next(err);
   }

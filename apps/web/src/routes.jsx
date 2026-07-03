@@ -9,6 +9,7 @@ import CreateInterview from "@/pages/CreateInterview";
 import TemplateStart from "@/pages/TemplateStart";
 import Interview from "@/pages/Interview";
 import Report from "@/pages/Report";
+import PublicReport from "@/pages/PublicReport";
 import Profile from "@/pages/Profile";
 import Practice from "@/pages/Practice";
 import Resources from "@/pages/Resources";
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       { path: "interview/template/:templateId", element: <ProtectedRoute><TemplateStart /></ProtectedRoute> },
       { path: "interview/:interviewId", element: <ProtectedRoute><Interview /></ProtectedRoute> },
       { path: "interview/report/:interviewId", element: <ProtectedRoute><Report /></ProtectedRoute> },
+      { path: "report/public/:token", element: <PublicReport /> },
       { path: "resources", element: <Resources /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },

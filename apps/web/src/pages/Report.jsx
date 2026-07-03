@@ -1,23 +1,69 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useReport } from "@/hooks/useReport";
-import { useInterview } from "@/hooks/useInterview";
-import { useScoringStatus } from "@/hooks/useInterview";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  useReport,
+  useEnableReportShare,
+  useDisableReportShare,
+} from "@/hooks/useReport";
+import { useInterview, useScoringStatus } from "@/hooks/useInterview";
+import { ReportContent } from "@/components/report/ReportContent";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Toast from "@/components/Toast";
 import { downloadReportPdf } from "@/utils/pdfDownload";
 import { getErrorMessage } from "@/lib/api/errors";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw, Link2, Link2Off, Copy } from "lucide-react";
 
 export default function Report() {
   const { interviewId } = useParams();
   const { data: report, isLoading, error, refetch } = useReport(interviewId);
   const { data: interview } = useInterview(interviewId);
   const { data: scoringStatus } = useScoringStatus(interviewId, true);
+  const enableShare = useEnableReportShare(interviewId);
+  const disableShare = useDisableReportShare(interviewId);
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
-  const isGenerating = scoringStatus?.summaryStatus === "generating" ||
+  const isGenerating =
+    scoringStatus?.summaryStatus === "generating" ||
     scoringStatus?.answers?.some((a) => a.scoringStatus === "pending");
+
+  const shareActive =
+    report?.shareToken &&
+    report?.shareExpiresAt &&
+    new Date(report.shareExpiresAt) > new Date();
+
+  const shareUrl = shareActive
+    ? `${window.location.origin}/report/public/${report.shareToken}`
+    : null;
+
+  const handleEnableShare = async () => {
+    try {
+      await enableShare.mutateAsync();
+      setToast({ show: true, message: "Share link created", type: "success" });
+    } catch (err) {
+      setToast({ show: true, message: getErrorMessage(err, "Failed to create share link"), type: "error" });
+    }
+  };
+
+  const handleDisableShare = async () => {
+    try {
+      await disableShare.mutateAsync();
+      setToast({ show: true, message: "Share link revoked", type: "success" });
+    } catch (err) {
+      setToast({ show: true, message: getErrorMessage(err, "Failed to revoke share link"), type: "error" });
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setToast({ show: true, message: "Link copied to clipboard", type: "success" });
+    } catch {
+      setToast({ show: true, message: "Could not copy link", type: "error" });
+    }
+  };
 
   if (isLoading || isGenerating) {
     return (
@@ -54,62 +100,55 @@ export default function Report() {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Interview Report</h1>
-          <p className="text-[var(--color-muted)]">{interview?.interview_name}</p>
-        </div>
-        {report.finalScore != null && (
-          <Badge className="text-lg px-4 py-2">{report.finalScore}%</Badge>
-        )}
-      </div>
-
-      {report.summary && (
-        <Card className="mb-6">
-          <CardHeader><CardTitle>Overall Summary</CardTitle></CardHeader>
-          <CardContent><p className="text-sm leading-relaxed">{report.summary}</p></CardContent>
-        </Card>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {report.strengths && (
-          <Card>
-            <CardHeader><CardTitle className="text-base text-emerald-700">Strengths</CardTitle></CardHeader>
-            <CardContent><p className="text-sm">{report.strengths}</p></CardContent>
-          </Card>
-        )}
-        {report.areaOfImprovement && (
-          <Card>
-            <CardHeader><CardTitle className="text-base text-amber-700">Areas to Improve</CardTitle></CardHeader>
-            <CardContent><p className="text-sm">{report.areaOfImprovement}</p></CardContent>
-          </Card>
-        )}
-      </div>
+      <ReportContent report={report} interviewName={interview?.interview_name} />
 
       <Card className="mb-6">
-        <CardHeader><CardTitle>Question Breakdown</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          {(report.answers || []).map((a, i) => (
-            <details key={i} className="rounded-lg border border-[var(--color-border)] p-4">
-              <summary className="font-medium cursor-pointer flex items-center justify-between">
-                <span>Q{i + 1}: {a.question?.slice(0, 80)}{a.question?.length > 80 ? "..." : ""}</span>
-                {a.score != null && <Badge variant="secondary">{a.score}%</Badge>}
-              </summary>
-              <div className="mt-3 space-y-2 text-sm">
-                <p><strong>Your answer:</strong> {a.userAnswer}</p>
-                {a.feedback && <p><strong>Feedback:</strong> {a.feedback}</p>}
-                {a.tags?.length > 0 && (
-                  <div className="flex gap-1 flex-wrap">
-                    {a.tags.map((t) => <Badge key={t} variant="outline">{t}</Badge>)}
-                  </div>
-                )}
+        <CardHeader><CardTitle className="text-base">Share report</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--color-muted)]">
+            Create an opt-in public link (expires in 7 days). Anyone with the link can view this report without signing in.
+          </p>
+          {shareActive ? (
+            <div className="space-y-3">
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  readOnly
+                  value={shareUrl}
+                  className="flex h-10 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm"
+                />
+                <Button type="button" variant="outline" onClick={handleCopyLink}>
+                  <Copy size={16} /> Copy
+                </Button>
               </div>
-            </details>
-          ))}
+              {report.shareExpiresAt && (
+                <p className="text-xs text-[var(--color-muted)]">
+                  Expires {new Date(report.shareExpiresAt).toLocaleString()}
+                </p>
+              )}
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={handleDisableShare}
+                disabled={disableShare.isPending}
+              >
+                <Link2Off size={16} /> Revoke link
+              </Button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleEnableShare}
+              disabled={enableShare.isPending}
+            >
+              <Link2 size={16} /> Create share link
+            </Button>
+          )}
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex flex-wrap gap-3">
         <Button onClick={() => downloadReportPdf(report, interview)}>
           <Download size={16} /> Download PDF
         </Button>
@@ -120,6 +159,13 @@ export default function Report() {
           <Link to="/dashboard">Dashboard</Link>
         </Button>
       </div>
+
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((t) => ({ ...t, show: false }))}
+      />
     </div>
   );
 }

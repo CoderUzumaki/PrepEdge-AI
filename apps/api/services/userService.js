@@ -4,6 +4,11 @@
  */
 
 import User from "../models/UserModel.js";
+import Interview from "../models/InterviewModel.js";
+import Report from "../models/ReportModel.js";
+import InterviewTemplate from "../models/InterviewTemplateModel.js";
+import admin from "../config/firebase.js";
+import { deleteCloudinaryFile } from "../utils/cloudinaryDelete.js";
 import { AppError, ERROR_CODES } from "@prepedge/shared";
 
 /**
@@ -50,4 +55,29 @@ export const updateUser = async (uid, updates) => {
   }
   await user.save();
   return user;
+};
+
+/**
+ * Permanently deletes the user and all associated data.
+ * @param {string} firebaseUid - Firebase UID
+ */
+export const deleteUserAccount = async (firebaseUid) => {
+  const user = await getUserByFirebaseId(firebaseUid);
+  const mongoUserId = user._id.toString();
+
+  const interviews = await Interview.find({ user_id: mongoUserId });
+  for (const interview of interviews) {
+    if (interview.resume_link) {
+      await deleteCloudinaryFile(interview.resume_link);
+    }
+  }
+
+  await Promise.all([
+    Report.deleteMany({ userId: mongoUserId }),
+    Interview.deleteMany({ user_id: mongoUserId }),
+    InterviewTemplate.deleteMany({ user_id: mongoUserId, is_system: false }),
+    User.deleteOne({ _id: user._id }),
+  ]);
+
+  await admin.auth().deleteUser(firebaseUid);
 };

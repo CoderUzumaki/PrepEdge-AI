@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `f1be959` |
-| **Latest module** | M5 — Interview templates (**done**, merged into `v2`) |
-| **Next module** | **M6 — Reports & share** |
+| **Integration branch** | `v2` @ `80241a8` |
+| **Latest module** | M6 — Reports & share (**in progress** on `v2-M6-reports`) |
+| **Next module** | **M7 — Recruiter demo** (after M6 merge) |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -51,7 +51,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | yes (`d6271d3`) |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
-| **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | pending | — |
+| **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | pending merge |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | pending | — |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
@@ -276,6 +276,44 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
+## M6 — Reports & share (completed)
+
+**Branch:** `v2-M6-reports` → merge into `v2`  
+**Commit:** _(pending merge)_
+
+### What was built
+
+**API**
+- `ReportModel` — `shareToken`, `shareExpiresAt` (7-day TTL)
+- `reportService` — enable/disable share, `getPublicReportByToken`, `sanitizePublicReport`
+- `GET /api/reports/public/:token` — unauthenticated, rate-limited
+- `POST/DELETE /api/reports/:interviewId/share` — opt-in share toggle
+- `DELETE /api/users/me` — cascade delete interviews, reports, templates, Cloudinary resumes, Firebase user
+
+**Shared**
+- `speech/speechSummary.js` — aggregate WPM/fillers across answers
+- `reportAnswerSchema` — optional `speechMetrics`
+
+**Web**
+- `ScoreRing` — circular score display
+- `ReportContent` — shared layout with speech section + expandable per-Q feedback
+- Enhanced `Report.jsx` — share link create/copy/revoke
+- `PublicReport.jsx` at `/report/public/:token`
+- Enhanced `pdfDownload.js` — summary, strengths, speech, per-Q feedback
+- `Profile.jsx` — delete account with DELETE confirmation
+
+**Tests (72 total)**
+- `report.test.js` — speech summary, public sanitization, share enable/disable
+
+### M6 acceptance criteria — verified
+
+- [x] PDF includes scores, feedback, weak/strong topics, speech metrics
+- [x] Share link opens public report without auth
+- [x] Delete account removes user data from MongoDB (+ Firebase)
+- [x] `npm run lint` + `npm test` pass
+
+---
+
 ## Known decisions & caveats
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
@@ -290,6 +328,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M6 complete (pending merge)
+
+- **Agent session:** Reports & share — ScoreRing, speech summary, public share links, PDF enhancement, account deletion
+- **Branch:** `v2-M6-reports`
+- **Next:** Merge into `v2`, then M7 recruiter demo
 
 ### 2026-07-03 — M5 complete
 

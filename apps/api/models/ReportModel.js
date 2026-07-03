@@ -42,6 +42,8 @@ const reportSchema = new mongoose.Schema({
     default: "pending",
   },
   schemaVersion: { type: Number, default: 2 },
+  shareToken: { type: String, default: null, sparse: true, index: true },
+  shareExpiresAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
 });
 

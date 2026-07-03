@@ -52,3 +52,15 @@ export const getMyQuotas = async (req, res, next) => {
     next(err);
   }
 };
+
+/**
+ * DELETE /api/users/me
+ */
+export const deleteMe = async (req, res, next) => {
+  try {
+    await userService.deleteUserAccount(req.firebaseUser.uid);
+    res.success({ message: "Account deleted" });
+  } catch (err) {
+    next(err);
+  }
+};
