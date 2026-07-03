@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `d6271d3` |
-| **Latest module** | M3 — AI security (**done**, merged into `v2`) |
-| **Next module** | **M4 — STT** or **M5 — Templates** (parallel) |
+| **Integration branch** | `v2` @ `a62a535` |
+| **Latest module** | M4 — STT (**done**, merged into `v2`); M5 in progress on `v2-M5-templates` |
+| **Next module** | **M5 — Templates** (finish + merge), then **M6 — Reports & share** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -49,8 +49,8 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`7a2ea0f`) |
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | yes (`f7d0620`) |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | yes (`d6271d3`) |
-| **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
-| **M5** | Interview templates | `v2-M5-templates` | M0, M1 | pending | — |
+| **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
+| **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | pending merge |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | pending | — |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | pending | — |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
@@ -208,12 +208,80 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
+## M4 — STT (completed)
+
+**Branch:** `v2-M4-stt` → merged into `v2`  
+**Commit:** `a62a535` — `feat(m4): add Groq Whisper STT proxy and RecordingControls`
+
+### What was built
+
+**API**
+- `providers/stt/groqWhisper.js` — Groq Whisper v3 Turbo proxy
+- `services/speechService.js` — STT quota via `checkAndIncrementStt`
+- `POST /api/speech/transcribe` — authenticated transcription endpoint
+
+**Shared**
+- `packages/shared/src/speech/analyzeTranscript.js` — filler words, WPM
+
+**Web**
+- `RecordingControls.jsx` — MediaRecorder, pause/stop, waveform, processing skeleton
+- Refactored `Interview.jsx` — Groq STT + editable transcript (Web Speech API removed)
+- `useTranscribe.js` hook
+- `speechMetrics` persisted on answer submit
+
+**Tests**
+- `speech.test.js` — analyzeTranscript + quota integration
+
+### M4 acceptance criteria — verified
+
+- [x] Pause and stop trigger transcription; transcript editable before submit
+- [x] STT quota enforced (25/day); text input fallback remains
+- [x] Waveform/timer UI during recording; skeleton on processing
+- [x] `npm run lint` + `npm test` pass
+
+---
+
+## M5 — Interview templates (completed)
+
+**Branch:** `v2-M5-templates` → merge into `v2`  
+**Commit:** _(pending merge)_
+
+### What was built
+
+**Shared**
+- `packages/shared/src/schemas/template.js` — `createTemplateSchema`, `templateFieldsSchema`
+
+**API**
+- `InterviewTemplateModel.js` — system + user templates (max 10 per user)
+- `templateService.js` — seed 6 system templates, CRUD, `templateToSetupPayload`
+- `templateRoutes.js` — `GET/POST/DELETE /api/templates`, `POST /api/templates/:id/start`
+- Seeds system templates on DB connect
+
+**Web**
+- `TemplateCard.jsx` — pre-made and user template cards
+- `useTemplates.js` — list, create, delete, start-from-template hooks
+- `TemplateStart.jsx` — optional resume + one-click start
+- Dashboard — "Start from template" grid (system + user, delete own)
+- `CreateInterview.jsx` — template picker tab + "Save as template" on step 3
+
+**Tests (66 total)**
+- `template.test.js` — payload mapping, schema, access control, max-10 cap
+
+### M5 acceptance criteria — verified
+
+- [x] One-click start from template → optional resume → question generation
+- [x] User can create, list, delete own templates
+- [x] System templates are read-only
+- [x] `npm run lint` + `npm test` pass
+
+---
+
 ## Known decisions & caveats
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
 - **CORS errors** from `index.js` still throw a plain `Error` (not envelope) — pre-middleware; acceptable for M0.
 - **Use `git.exe commit-tree`** or `git.exe commit` to avoid Cursor injecting `Co-authored-by` trailers.
-- **STT quota** (`stt_day`) enforced in M4 when speech routes land; counter + service ready in M2.
+- **STT quota** (`stt_day`) enforced in M4 speech routes; counter + service ready since M2.
 - **Resume quota** skips increment when PDF hash is already in 7-day cache.
 - **M4 and M5** can run in parallel after M3 (M4 needs M1+M2; M5 needs M1).
 
@@ -222,6 +290,19 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M5 complete (pending merge)
+
+- **Agent session:** Interview templates — CRUD API, system seed, Dashboard/CreateInterview picker, TemplateStart flow
+- **Branch:** `v2-M5-templates`
+- **Next:** Merge into `v2`, then M6 reports & share
+
+### 2026-07-03 — M4 complete
+
+- **Agent session:** Groq Whisper STT — speech routes, RecordingControls, Interview refactor, speechMetrics
+- **Branch:** `v2-M4-stt` → merged into `v2`
+- **Commit:** `a62a535`
+- **Next:** M5 templates (`v2-M5-templates`)
 
 ### 2026-07-03 — M3 complete
 

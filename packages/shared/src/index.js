@@ -3,6 +3,7 @@ export * from "./schemas/interview.js";
 export * from "./schemas/report.js";
 export * from "./schemas/user.js";
 export * from "./schemas/contact.js";
+export * from "./schemas/template.js";
 export * from "./constants.js";
 export * from "./errors/index.js";
 export * from "./quota/periods.js";

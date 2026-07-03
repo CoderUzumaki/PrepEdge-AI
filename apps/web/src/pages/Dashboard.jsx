@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import { useDashboardAnalytics } from "@/hooks/useDashboard";
 import { useQuotas } from "@/hooks/useQuotas";
 import { useReports } from "@/hooks/useReport";
+import { useTemplates, useDeleteTemplate } from "@/hooks/useTemplates";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { QuotaBadge } from "@/components/layout/QuotaBadge";
+import { TemplateCard } from "@/components/layout/TemplateCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +13,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { TrendingUp, Target, Award } from "lucide-react";
 import { getErrorMessage } from "@/lib/api/errors";
+import Toast from "@/components/Toast";
+import { useState } from "react";
 
 export default function Dashboard() {
   const { data: analytics, isLoading: analyticsLoading, error } = useDashboardAnalytics();
   const { data: quotas, isLoading: quotasLoading } = useQuotas();
   const { data: reports, isLoading: reportsLoading } = useReports();
+  const { data: templates, isLoading: templatesLoading } = useTemplates();
+  const deleteTemplate = useDeleteTemplate();
+  const [toast, setToast] = useState({ show: false, message: "", type: "error" });
 
-  if (analyticsLoading || reportsLoading || quotasLoading) {
+  const handleDeleteTemplate = async (id) => {
+    try {
+      await deleteTemplate.mutateAsync(id);
+    } catch (err) {
+      setToast({ show: true, message: getErrorMessage(err, "Failed to delete template"), type: "error" });
+    }
+  };
+
+  if (analyticsLoading || reportsLoading || quotasLoading || templatesLoading) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-6">
         <Skeleton className="h-10 w-64" />
@@ -93,6 +108,40 @@ export default function Dashboard() {
             resetsAt={quotas.stt_day.resetsAt}
           />
         </div>
+      )}
+
+      {(templates?.system?.length > 0 || templates?.user?.length > 0) && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Start from template</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {templates.system?.length > 0 && (
+              <div>
+                <p className="mb-3 text-sm text-[var(--color-muted)]">Pre-made templates</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {templates.system.map((template) => (
+                    <TemplateCard key={template._id} template={template} isSystem />
+                  ))}
+                </div>
+              </div>
+            )}
+            {templates.user?.length > 0 && (
+              <div>
+                <p className="mb-3 text-sm text-[var(--color-muted)]">Your saved templates</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {templates.user.map((template) => (
+                    <TemplateCard
+                      key={template._id}
+                      template={template}
+                      onDelete={() => handleDeleteTemplate(template._id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -225,6 +274,13 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((t) => ({ ...t, show: false }))}
+      />
     </div>
   );
 }

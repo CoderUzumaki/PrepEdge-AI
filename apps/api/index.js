@@ -17,6 +17,8 @@ import interviewRoutes from "./routes/interviewRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import speechRoutes from "./routes/speechRoutes.js";
+import templateRoutes from "./routes/templateRoutes.js";
+import { seedSystemTemplates } from "./services/templateService.js";
 
 const app = express();
 
@@ -47,6 +49,7 @@ app.use("/api/interviews", interviewRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/speech", speechRoutes);
+app.use("/api/templates", templateRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -54,7 +57,8 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 connectDB()
-  .then(() => {
+  .then(async () => {
+    await seedSystemTemplates();
     app.listen(PORT, () => console.log(`PrepEdge API v2 running on port ${PORT}`));
   })
   .catch((err) => {

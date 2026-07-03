@@ -6,6 +6,7 @@ import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import Dashboard from "@/pages/Dashboard";
 import CreateInterview from "@/pages/CreateInterview";
+import TemplateStart from "@/pages/TemplateStart";
 import Interview from "@/pages/Interview";
 import Report from "@/pages/Report";
 import Profile from "@/pages/Profile";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <ProtectedRoute><Profile /></ProtectedRoute> },
       { path: "practice", element: <ProtectedRoute><Practice /></ProtectedRoute> },
       { path: "interview/setup", element: <ProtectedRoute><CreateInterview /></ProtectedRoute> },
+      { path: "interview/template/:templateId", element: <ProtectedRoute><TemplateStart /></ProtectedRoute> },
       { path: "interview/:interviewId", element: <ProtectedRoute><Interview /></ProtectedRoute> },
       { path: "interview/report/:interviewId", element: <ProtectedRoute><Report /></ProtectedRoute> },
       { path: "resources", element: <Resources /> },
