@@ -24,8 +24,8 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `6073237` |
-| **Latest module** | M9 — Polish (**in progress** on `v2-M9-polish`) |
+| **Integration branch** | `v2` @ `e4f28fa` |
+| **Latest module** | M9 — Polish (**done**, merged into `v2`) |
 | **Next module** | **v2 → main** release |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
@@ -54,7 +54,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | yes (`5435397`) |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | **done** | yes (`41bed78`) |
-| **M9** | Polish | `v2-M9-polish` | all above | **done** | pending merge |
+| **M9** | Polish | `v2-M9-polish` | all above | **done** | yes (`e4f28fa`) |
 
 **Merge order into `v2`:** M0 → M1 → M2 → M3 → (M4 ∥ M5) → M6 → M7 → M8 → M9
 
@@ -387,7 +387,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## M9 — Polish (completed)
 
 **Branch:** `v2-M9-polish` → merge into `v2`  
-**Commit:** _(pending merge)_
+**Commit:** `e4f28fa` — `feat(m9): add dark mode, Vercel-style landing and navbar, lazy routes`
 
 ### What was built
 
@@ -429,11 +429,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 Agents: **append new entries at the top** (newest first).
 
-### 2026-07-03 — M9 complete (pending merge)
+### 2026-07-03 — M9 complete
 
 - **Agent session:** Polish — dark mode, Vercel-style landing/navbar, lazy routes, error boundary
-- **Branch:** `v2-M9-polish`
-- **Next:** Merge into `v2`, prepare v2 → main release
+- **Branch:** `v2-M9-polish` → merged into `v2`
+- **Commit:** `e4f28fa`
+- **Next:** v2 → main release
 
 ### 2026-07-03 — M8 complete
 
