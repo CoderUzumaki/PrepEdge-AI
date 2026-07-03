@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `a62a535` |
-| **Latest module** | M4 — STT (**done**, merged into `v2`); M5 in progress on `v2-M5-templates` |
-| **Next module** | **M5 — Templates** (finish + merge), then **M6 — Reports & share** |
+| **Integration branch** | `v2` @ `f1be959` |
+| **Latest module** | M5 — Interview templates (**done**, merged into `v2`) |
+| **Next module** | **M6 — Reports & share** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -50,7 +50,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | yes (`f7d0620`) |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | yes (`d6271d3`) |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
-| **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | pending merge |
+| **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | pending | — |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | pending | — |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
@@ -243,8 +243,8 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ## M5 — Interview templates (completed)
 
-**Branch:** `v2-M5-templates` → merge into `v2`  
-**Commit:** _(pending merge)_
+**Branch:** `v2-M5-templates` → merged into `v2`  
+**Commit:** `f1be959` — `feat(m5): add interview templates with dashboard picker and save flow`
 
 ### What was built
 
@@ -291,11 +291,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 Agents: **append new entries at the top** (newest first).
 
-### 2026-07-03 — M5 complete (pending merge)
+### 2026-07-03 — M5 complete
 
 - **Agent session:** Interview templates — CRUD API, system seed, Dashboard/CreateInterview picker, TemplateStart flow
-- **Branch:** `v2-M5-templates`
-- **Next:** Merge into `v2`, then M6 reports & share
+- **Branch:** `v2-M5-templates` → merged into `v2`
+- **Commit:** `f1be959`
+- **Next:** M6 reports & share (`v2-M6-reports`)
 
 ### 2026-07-03 — M4 complete
 
