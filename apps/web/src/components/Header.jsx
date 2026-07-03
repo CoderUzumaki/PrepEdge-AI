@@ -23,6 +23,46 @@ const appNav = [
 ];
 
 /**
+ * Animated nav link — underline grows on hover and stays visible when active.
+ */
+function NavLinkItem({ to, label, hash, active, onClick, className }) {
+  const classes = cn(
+    "group relative inline-flex items-center rounded-full px-3 py-1.5 text-sm no-underline transition-colors",
+    active
+      ? "text-[var(--color-foreground)]"
+      : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+    className
+  );
+
+  const indicator = (
+    <span
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-x-3 bottom-0.5 h-px rounded-full bg-[var(--color-foreground)]",
+        "origin-center transition-transform duration-200 ease-out",
+        active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+      )}
+    />
+  );
+
+  if (hash) {
+    return (
+      <a href={to} className={classes} onClick={onClick}>
+        {label}
+        {indicator}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={to} className={classes} onClick={onClick}>
+      {label}
+      {indicator}
+    </Link>
+  );
+}
+
+/**
  * PrepEdge logo mark — minimal triangle inspired by geometric SaaS marks.
  */
 function LogoMark({ className }) {
@@ -48,10 +88,49 @@ export default function Header() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "error" });
+  const [activeSection, setActiveSection] = useState("");
   const accountRef = useRef(null);
 
   const isHome = location.pathname === "/";
   const navItems = user ? appNav : publicNav;
+
+  const isNavActive = (link) => {
+    if (link.hash) {
+      if (location.pathname !== "/") return false;
+      const sectionId = link.to.split("#")[1];
+      if (location.hash) return location.hash === `#${sectionId}`;
+      return activeSection === sectionId;
+    }
+    if (link.to === "/interview/setup") return location.pathname.startsWith("/interview");
+    return location.pathname === link.to;
+  };
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const sectionIds = ["features", "try-sample"];
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target.id) setActiveSection(visible[0].target.id);
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.25, 0.5] }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [location.pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -89,14 +168,6 @@ export default function Header() {
     }
   };
 
-  const navLinkClass = (active = false) =>
-    cn(
-      "rounded-full px-3 py-1.5 text-sm transition-colors",
-      active
-        ? "text-[var(--color-foreground)]"
-        : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-    );
-
   return (
     <>
       {profile?.is_demo && (
@@ -120,7 +191,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-2 rounded-md text-[var(--color-foreground)] transition-opacity hover:opacity-80"
+            className="flex shrink-0 items-center gap-2 rounded-md text-[var(--color-foreground)] no-underline transition-opacity hover:opacity-80"
           >
             <LogoMark className="h-5 w-5" />
             <span className="text-sm font-semibold tracking-tight">PrepEdge</span>
@@ -131,21 +202,15 @@ export default function Header() {
             className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 md:flex"
             aria-label="Main"
           >
-            {navItems.map((link) =>
-              link.hash ? (
-                <a key={link.to} href={link.to} className={navLinkClass()}>
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={navLinkClass(location.pathname === link.to)}
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+            {navItems.map((link) => (
+              <NavLinkItem
+                key={link.to}
+                to={link.to}
+                label={link.label}
+                hash={link.hash}
+                active={isNavActive(link)}
+              />
+            ))}
           </nav>
 
           {/* Right actions — desktop */}
@@ -217,7 +282,7 @@ export default function Header() {
                 </button>
                 <Link
                   to="/login"
-                  className="rounded-full px-3 py-1.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors"
+                  className="rounded-full px-3 py-1.5 text-sm text-[var(--color-foreground)] no-underline hover:bg-[var(--color-surface)] transition-colors"
                 >
                   Log In
                 </Link>
@@ -253,27 +318,17 @@ export default function Header() {
         {mobileOpen && (
           <div className="border-t border-[var(--color-border)] bg-[var(--color-background)]/95 px-4 py-4 backdrop-blur-xl md:hidden">
             <nav className="flex flex-col gap-1" aria-label="Mobile">
-              {navItems.map((link) =>
-                link.hash ? (
-                  <a
-                    key={link.to}
-                    href={link.to}
-                    className="rounded-lg px-3 py-2.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {link.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="rounded-lg px-3 py-2.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                )
-              )}
+              {navItems.map((link) => (
+                <NavLinkItem
+                  key={link.to}
+                  to={link.to}
+                  label={link.label}
+                  hash={link.hash}
+                  active={isNavActive(link)}
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full rounded-lg px-3 py-2.5 hover:bg-[var(--color-surface)]"
+                />
+              ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
               {user ? (
