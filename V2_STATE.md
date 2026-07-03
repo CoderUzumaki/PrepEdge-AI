@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `125889a` |
-| **Latest module** | M7 — Recruiter demo (**in progress** on `v2-M7-recruiter-demo`) |
-| **Next module** | **M8 — SEO & analytics** (after M7 merge) |
+| **Integration branch** | `v2` @ `5435397` |
+| **Latest module** | M7 — Recruiter demo (**done**, merged into `v2`) |
+| **Next module** | **M8 — SEO & analytics** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -52,7 +52,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
-| **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | pending merge |
+| **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | yes (`5435397`) |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
 
@@ -317,7 +317,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## M7 — Recruiter demo (completed)
 
 **Branch:** `v2-M7-recruiter-demo` → merge into `v2`  
-**Commit:** _(pending merge)_
+**Commit:** `5435397` — `feat(m7): add recruiter demo path with sample question and magic-link account`
 
 ### What was built
 
@@ -364,11 +364,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 Agents: **append new entries at the top** (newest first).
 
-### 2026-07-03 — M7 complete (pending merge)
+### 2026-07-03 — M7 complete
 
 - **Agent session:** Recruiter demo — landing redesign, sample question API, magic-link demo account, DemoBanner
-- **Branch:** `v2-M7-recruiter-demo`
-- **Next:** Merge into `v2`, then M8 SEO & analytics
+- **Branch:** `v2-M7-recruiter-demo` → merged into `v2`
+- **Commit:** `5435397`
+- **Next:** M8 SEO & analytics (`v2-M8-seo-analytics`)
 
 ### 2026-07-03 — M6 complete
 
