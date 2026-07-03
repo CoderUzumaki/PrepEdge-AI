@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Toast from "@/components/Toast";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Zap } from "lucide-react";
 
 export default function Practice() {
@@ -28,7 +29,7 @@ export default function Practice() {
       }
       navigate(`/interview/${res.interviewId}`);
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Failed to start practice", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Failed to start practice"), type: "error" });
     }
   };
 

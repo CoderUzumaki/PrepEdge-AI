@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api/client";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ export default function Profile() {
       await refreshProfile();
       setToast({ show: true, message: "Profile updated!", type: "success" });
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Update failed", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Update failed"), type: "error" });
     } finally {
       setSaving(false);
     }

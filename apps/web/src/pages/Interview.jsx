@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Toast from "@/components/Toast";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Mic, MicOff, ArrowRight, Pause, Volume2 } from "lucide-react";
 import { analyzeSpeech } from "@/utils/speechAnalysis";
 
@@ -94,7 +95,7 @@ export default function Interview() {
         setStats(null);
       }
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Submit failed", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Submit failed"), type: "error" });
     } finally {
       setSubmitting(false);
     }

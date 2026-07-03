@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { TrendingUp, Target, Award } from "lucide-react";
+import { getErrorMessage } from "@/lib/api/errors";
 
 export default function Dashboard() {
   const { data: analytics, isLoading: analyticsLoading, error } = useDashboardAnalytics();
@@ -27,7 +28,9 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <p className="text-[var(--color-destructive)]">Failed to load dashboard. Please try again.</p>
+        <p className="text-[var(--color-destructive)]">
+          {getErrorMessage(error, "Failed to load dashboard. Please try again.")}
+        </p>
       </div>
     );
   }

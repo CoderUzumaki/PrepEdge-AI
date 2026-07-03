@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Toast from "@/components/Toast";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Upload, ArrowLeft, ArrowRight } from "lucide-react";
 
 const STEPS = ["Basics", "Job Details", "Resume & Focus"];
@@ -48,7 +49,7 @@ export default function CreateInterview() {
       }
       navigate(`/interview/${res.interviewId}`);
     } catch (err) {
-      setToast({ show: true, message: err.response?.data?.error || "Setup failed", type: "error" });
+      setToast({ show: true, message: getErrorMessage(err, "Setup failed"), type: "error" });
     }
   };
 

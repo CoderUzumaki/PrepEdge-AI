@@ -5,6 +5,9 @@ import compression from "compression";
 import connectDB from "./config/db.js";
 import "./config/firebase.js";
 import { allowedOrigins } from "./config/env.js";
+import { requestIdMiddleware } from "./middleware/requestId.js";
+import { responseEnvelopeMiddleware } from "./middleware/responseEnvelope.js";
+import { requestLoggerMiddleware } from "./middleware/requestLogger.js";
 import { notFoundHandler, errorHandler } from "./middleware/errorHandler.js";
 
 import healthRoutes from "./routes/healthRoutes.js";
@@ -31,6 +34,10 @@ app.use(
   })
 );
 app.use(express.json());
+
+app.use(requestIdMiddleware);
+app.use(responseEnvelopeMiddleware);
+app.use(requestLoggerMiddleware);
 
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);

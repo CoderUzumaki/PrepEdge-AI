@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { downloadReportPdf } from "@/utils/pdfDownload";
+import { getErrorMessage } from "@/lib/api/errors";
 import { Download, RefreshCw } from "lucide-react";
 
 export default function Report() {
@@ -31,7 +32,18 @@ export default function Report() {
     );
   }
 
-  if (error || !report) {
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p className="text-[var(--color-destructive)] mb-4">
+          {getErrorMessage(error, "Failed to load report. Please try again.")}
+        </p>
+        <Button onClick={() => refetch()}><RefreshCw size={16} /> Retry</Button>
+      </div>
+    );
+  }
+
+  if (!report) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <p className="text-[var(--color-muted)] mb-4">Report not available yet.</p>
