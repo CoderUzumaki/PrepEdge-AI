@@ -24,8 +24,8 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` (pending M2 merge) |
-| **Latest module** | M2 — Usage caps (**done**, on `v2-M2-usage-caps`) |
+| **Integration branch** | `v2` @ `f7d0620` |
+| **Latest module** | M2 — Usage caps (**done**, merged into `v2`) |
 | **Next module** | **M3 — AI security** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
@@ -47,7 +47,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 |----|--------|--------|------------|--------|----------------|
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
 | **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`7a2ea0f`) |
-| **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | pending merge |
+| **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | yes (`f7d0620`) |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | pending | — |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | pending | — |
@@ -143,7 +143,8 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ## M2 — Usage caps (completed)
 
-**Branch:** `v2-M2-usage-caps`
+**Branch:** `v2-M2-usage-caps` → merged into `v2`  
+**Commit:** `f7d0620` — `feat(m2): enforce usage caps with quota API and dashboard UI`
 
 ### What was built
 
@@ -194,10 +195,9 @@ Agents: **append new entries at the top** (newest first).
 ### 2026-07-03 — M2 complete
 
 - **Agent session:** Usage caps — UserModel quotas, quotaService, API enforcement, QuotaBadge UI
-- **Branch:** `v2-M2-usage-caps`
-- **Done:** Shared quota periods/caps, GET /api/users/me/quotas, setup/practice enforcement, Dashboard + CreateInterview UI, 9 quota tests
-- **Verified:** `npm run lint` + `npm test` (35 tests) green
-- **Next:** Merge M2 into `v2`; start M3 AI security on `v2-M3-ai-security`
+- **Branch:** `v2-M2-usage-caps` → merged into `v2`
+- **Commit:** `f7d0620`
+- **Next:** M3 AI security — create `v2-M3-ai-security` from `v2`
 
 ### 2026-07-03 — M1 complete
 
