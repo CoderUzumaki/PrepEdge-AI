@@ -24,8 +24,8 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` (pending merge of M1) |
-| **Latest module** | M1 — Design system (**done**, on `v2-M1-design-system`) |
+| **Integration branch** | `v2` @ `f3e5c45` |
+| **Latest module** | M1 — Design system (**done**, merged into `v2`) |
 | **Next module** | **M2 — Usage caps** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
@@ -46,7 +46,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | ID | Module | Branch | Depends on | Status | Merged to `v2` |
 |----|--------|--------|------------|--------|----------------|
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
-| **M1** | Design system | `v2-M1-design-system` | M0 | **done** | pending merge |
+| **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`f3e5c45`) |
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | pending | — |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | pending | — |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
@@ -109,7 +109,8 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ## M1 — Design system (completed)
 
-**Branch:** `v2-M1-design-system`
+**Branch:** `v2-M1-design-system` → merged into `v2`  
+**Commit:** `f3e5c45` — `feat(m1): add design system tokens, Inter font, and auth shell refresh`
 
 ### What was built
 
@@ -165,10 +166,11 @@ Agents: **append new entries at the top** (newest first).
 ### 2026-07-03 — M1 complete
 
 - **Agent session:** Design system module — tokens, Inter font, layout components, UI primitives, auth shell
-- **Branch:** `v2-M1-design-system`
+- **Branch:** `v2-M1-design-system` → merged into `v2`
+- **Commit:** `f3e5c45`
 - **Done:** index.css tokens, @fontsource/inter, PageHeader/EmptyState/StepIndicator/AuthShell, ui/ refinements, Header/Footer/Login/SignUp refresh
 - **Verified:** `npm run lint` + `npm test` (26 tests) green
-- **Next:** Merge M1 into `v2`; start M2 usage caps on `v2-M2-usage-caps`
+- **Next:** M2 usage caps — create `v2-M2-usage-caps` from `v2`
 
 ### 2026-07-03 — M0 complete
 
