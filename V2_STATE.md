@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` (pending M3 merge) |
-| **Latest module** | M3 — AI security (**done**, on `v2-M3-ai-security`) |
-| **Next module** | **M4 — STT** or **M5 — Templates** (parallel after M3) |
+| **Integration branch** | `v2` @ `d6271d3` |
+| **Latest module** | M3 — AI security (**done**, merged into `v2`) |
+| **Next module** | **M4 — STT** or **M5 — Templates** (parallel) |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -48,7 +48,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
 | **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`7a2ea0f`) |
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | yes (`f7d0620`) |
-| **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | pending merge |
+| **M3** | AI security | `v2-M3-ai-security` | M0 | **done** | yes (`d6271d3`) |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | pending | — |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | pending | — |
@@ -177,6 +177,37 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
+## M3 — AI security (completed)
+
+**Branch:** `v2-M3-ai-security` → merged into `v2`  
+**Commit:** `d6271d3` — `feat(m3): harden AI prompts with sanitizer, delimiters, and output validation`
+
+### What was built
+
+**Shared (`packages/shared/src/sanitizer/`)**
+- `inputSanitizer.js` — null-byte strip, truncation, injection detection, `wrapUntrustedContent`, `assertSafeForAi` → `guardrail_violation`
+
+**API (`apps/api/providers/ai/`)**
+- Hardened system prompts with untrusted-content rules for all `AI_TASKS`
+- Delimiter-wrapped prompts: `<user_answer>`, `<resume_text>`, `<job_description>`, etc.
+- `validateOutput.js` — score bounds 0–100, feedback/tags validation
+- `aiErrors.js` — maps parse/validation failures to `upstream_failure`
+
+**Web**
+- `getErrorMessage` handles `guardrail_violation` and `upstream_failure`
+
+**Tests (55 total)**
+- `sanitizer.test.js`, `aiSecurity.test.js`
+
+### M3 acceptance criteria — verified
+
+- [x] Injection answers blocked via `guardrail_violation` before LLM
+- [x] All AI prompts use delimiter tags for untrusted content
+- [x] Invalid AI JSON/score maps to `upstream_failure`
+- [x] `npm run lint` + `npm test` pass
+
+---
+
 ## Known decisions & caveats
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
@@ -184,7 +215,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 - **Use `git.exe commit-tree`** or `git.exe commit` to avoid Cursor injecting `Co-authored-by` trailers.
 - **STT quota** (`stt_day`) enforced in M4 when speech routes land; counter + service ready in M2.
 - **Resume quota** skips increment when PDF hash is already in 7-day cache.
-- **M3** can start after M2 merges (depends only on M0).
+- **M4 and M5** can run in parallel after M3 (M4 needs M1+M2; M5 needs M1).
 
 ---
 
@@ -195,10 +226,9 @@ Agents: **append new entries at the top** (newest first).
 ### 2026-07-03 — M3 complete
 
 - **Agent session:** AI security — input sanitizer, hardened prompts, output validation
-- **Branch:** `v2-M3-ai-security`
-- **Done:** inputSanitizer, delimiter prompts, validateOutput, guardrail_violation/upstream_failure, 20 new tests
-- **Verified:** `npm run lint` + `npm test` (55 tests) green
-- **Next:** Merge M3 into `v2`; start M4 STT or M5 templates
+- **Branch:** `v2-M3-ai-security` → merged into `v2`
+- **Commit:** `d6271d3`
+- **Next:** M4 STT (`v2-M4-stt`) or M5 templates (`v2-M5-templates`)
 
 ### 2026-07-03 — M2 complete
 
