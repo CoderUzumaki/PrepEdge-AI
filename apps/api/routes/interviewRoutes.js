@@ -7,6 +7,7 @@ import {
   practiceQuestionSchema,
 } from "@prepedge/shared";
 import firebaseAuthMiddleware from "../middleware/firebaseAuthMiddleware.js";
+import { blockDemoWrites } from "../middleware/demoReadOnly.js";
 import { validate } from "../middleware/validate.js";
 import { requireInterviewOwner } from "../middleware/ownerMiddleware.js";
 import { createRateLimiter } from "../middleware/rateLimit.js";
@@ -28,6 +29,7 @@ const answerLimiter = createRateLimiter({
 });
 
 router.use(firebaseAuthMiddleware);
+router.use(blockDemoWrites);
 
 router.post(
   "/setup",

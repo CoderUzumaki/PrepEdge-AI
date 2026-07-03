@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import firebaseAuthMiddleware from "../middleware/firebaseAuthMiddleware.js";
+import { blockDemoWrites } from "../middleware/demoReadOnly.js";
 import { createRateLimiter } from "../middleware/rateLimit.js";
 import * as speechController from "../controllers/speechController.js";
 
@@ -18,6 +19,7 @@ const sttLimiter = createRateLimiter({
 const router = express.Router();
 
 router.use(firebaseAuthMiddleware);
+router.use(blockDemoWrites);
 
 router.post(
   "/transcribe",

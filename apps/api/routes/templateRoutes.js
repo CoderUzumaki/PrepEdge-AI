@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import { createTemplateSchema } from "@prepedge/shared";
 import firebaseAuthMiddleware from "../middleware/firebaseAuthMiddleware.js";
+import { blockDemoWrites } from "../middleware/demoReadOnly.js";
 import { validate } from "../middleware/validate.js";
 import { createRateLimiter } from "../middleware/rateLimit.js";
 import * as templateController from "../controllers/templateController.js";
@@ -16,6 +17,7 @@ const setupLimiter = createRateLimiter({
 });
 
 router.use(firebaseAuthMiddleware);
+router.use(blockDemoWrites);
 
 router.get("/", templateController.listTemplates);
 router.get("/:id", templateController.getTemplate);

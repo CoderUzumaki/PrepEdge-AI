@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
     stt_day: { type: quotaCounterSchema, default: () => ({}) },
   },
   schemaVersion: { type: Number, default: 2 },
+  is_demo: { type: Boolean, default: false, index: true },
   created_at: { type: Date, default: Date.now },
 });
 

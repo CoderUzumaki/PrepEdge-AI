@@ -15,8 +15,10 @@ import { TrendingUp, Target, Award } from "lucide-react";
 import { getErrorMessage } from "@/lib/api/errors";
 import Toast from "@/components/Toast";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
+  const { profile } = useAuth();
   const { data: analytics, isLoading: analyticsLoading, error } = useDashboardAnalytics();
   const { data: quotas, isLoading: quotasLoading } = useQuotas();
   const { data: reports, isLoading: reportsLoading } = useReports();
@@ -64,6 +66,8 @@ export default function Dashboard() {
     : "—";
 
   const interviewsAtLimit = quotas?.interviews_month?.remaining === 0;
+  const isDemo = profile?.is_demo;
+  const blockNewInterview = interviewsAtLimit || isDemo;
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8">
@@ -71,8 +75,14 @@ export default function Dashboard() {
         title="Dashboard"
         description="Track your scores, usage, and recent interview performance."
         action={
-          interviewsAtLimit ? (
-            <Button disabled>New Interview</Button>
+          blockNewInterview ? (
+            isDemo ? (
+              <Button asChild>
+                <Link to="/signup">Sign up free</Link>
+              </Button>
+            ) : (
+              <Button disabled>New Interview</Button>
+            )
           ) : (
             <Button asChild>
               <Link to="/interview/setup">New Interview</Link>

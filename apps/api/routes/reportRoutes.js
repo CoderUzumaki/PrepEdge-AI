@@ -1,5 +1,6 @@
 import express from "express";
 import firebaseAuthMiddleware from "../middleware/firebaseAuthMiddleware.js";
+import { blockDemoWrites } from "../middleware/demoReadOnly.js";
 import { createRateLimiter } from "../middleware/rateLimit.js";
 import * as reportController from "../controllers/reportController.js";
 
@@ -14,6 +15,7 @@ const publicShareLimiter = createRateLimiter({
 router.get("/public/:token", publicShareLimiter, reportController.getPublicReport);
 
 router.use(firebaseAuthMiddleware);
+router.use(blockDemoWrites);
 router.get("/", reportController.listReports);
 router.post("/:interviewId/share", reportController.enableShare);
 router.delete("/:interviewId/share", reportController.disableShare);

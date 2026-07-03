@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `80241a8` |
-| **Latest module** | M6 — Reports & share (**in progress** on `v2-M6-reports`) |
-| **Next module** | **M7 — Recruiter demo** (after M6 merge) |
+| **Integration branch** | `v2` @ `125889a` |
+| **Latest module** | M7 — Recruiter demo (**in progress** on `v2-M7-recruiter-demo`) |
+| **Next module** | **M8 — SEO & analytics** (after M7 merge) |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -52,7 +52,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | **done** | yes (`a62a535`) |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
-| **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | pending | — |
+| **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | pending merge |
 | **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
 
@@ -314,6 +314,41 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
+## M7 — Recruiter demo (completed)
+
+**Branch:** `v2-M7-recruiter-demo` → merge into `v2`  
+**Commit:** _(pending merge)_
+
+### What was built
+
+**API**
+- `demoService` — seed read-only demo account (3 completed interviews + reports), Firebase custom token session
+- `GET /api/demo/sample-question`, `POST /api/demo/sample-answer`, `POST /api/demo/session`
+- `UserModel.is_demo` + `blockDemoWrites` middleware on write routes
+- Seeds demo data on API startup alongside system templates
+
+**Shared**
+- `demo/sampleQuestion.js`, `schemas/demo.js`
+
+**Web**
+- Redesigned `Home.jsx` — recruiter-first hero, `DemoPreview` animation, sample question section
+- `SampleQuestionCard` — no-auth try + AI feedback with `ScoreRing`
+- `DemoBanner` + "View Demo" in `Header` (magic-link via `signInWithCustomToken`)
+- Demo mode banner when logged in as demo user
+- `About.jsx` — architecture diagram + tech stack
+
+**Tests (76 total)**
+- `demo.test.js` — sample question, AI/heuristic scoring, custom token session
+
+### M7 acceptance criteria — verified
+
+- [x] Recruiter can try sample question without signup
+- [x] "View Demo" loads pre-seeded dashboard and reports
+- [x] All CTAs functional; no placeholder buttons
+- [x] `npm run lint` + `npm test` pass
+
+---
+
 ## Known decisions & caveats
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
@@ -328,6 +363,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M7 complete (pending merge)
+
+- **Agent session:** Recruiter demo — landing redesign, sample question API, magic-link demo account, DemoBanner
+- **Branch:** `v2-M7-recruiter-demo`
+- **Next:** Merge into `v2`, then M8 SEO & analytics
 
 ### 2026-07-03 — M6 complete
 
