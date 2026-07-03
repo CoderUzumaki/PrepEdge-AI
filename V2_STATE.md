@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `f37eff0` |
-| **Latest module** | M8 — SEO & analytics (**in progress** on `v2-M8-seo-analytics`) |
-| **Next module** | **M9 — Polish** (after M8 merge) |
+| **Integration branch** | `v2` @ `41bed78` |
+| **Latest module** | M8 — SEO & analytics (**done**, merged into `v2`) |
+| **Next module** | **M9 — Polish** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -53,7 +53,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | yes (`5435397`) |
-| **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | **done** | pending merge |
+| **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | **done** | yes (`41bed78`) |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
 
 **Merge order into `v2`:** M0 → M1 → M2 → M3 → (M4 ∥ M5) → M6 → M7 → M8 → M9
@@ -352,7 +352,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## M8 — SEO & analytics (completed)
 
 **Branch:** `v2-M8-seo-analytics` → merge into `v2`  
-**Commit:** _(pending merge)_
+**Commit:** `41bed78` — `feat(m8): add SEO meta tags, sitemap, JSON-LD, and Vercel analytics events`
 
 ### What was built
 
@@ -400,11 +400,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 Agents: **append new entries at the top** (newest first).
 
-### 2026-07-03 — M8 complete (pending merge)
+### 2026-07-03 — M8 complete
 
 - **Agent session:** SEO & analytics — PageSeo, sitemap/robots, JSON-LD, Vercel custom events
-- **Branch:** `v2-M8-seo-analytics`
-- **Next:** Merge into `v2`, then M9 polish
+- **Branch:** `v2-M8-seo-analytics` → merged into `v2`
+- **Commit:** `41bed78`
+- **Next:** M9 polish (`v2-M9-polish`)
 
 ### 2026-07-03 — M7 complete
 
