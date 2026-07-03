@@ -165,9 +165,16 @@ export const updateInterviewProgress = async (interview, updates) => {
  * @param {number} questionIndex
  * @param {string} answer
  * @param {string|null} [requestId]
+ * @param {Object|null} [speechMetrics]
  * @returns {Promise<import("../models/ReportModel.js").default>}
  */
-export const submitAnswer = async (interview, questionIndex, answer, requestId = null) => {
+export const submitAnswer = async (
+  interview,
+  questionIndex,
+  answer,
+  requestId = null,
+  speechMetrics = null
+) => {
   const question = interview.questions[questionIndex];
   if (!question) throw AppError.fromCode(ERROR_CODES.VALIDATION_ERROR, "Invalid question index");
 
@@ -186,12 +193,14 @@ export const submitAnswer = async (interview, questionIndex, answer, requestId =
     existing.scoringStatus = "pending";
     existing.score = null;
     existing.feedback = null;
+    if (speechMetrics) existing.speechMetrics = speechMetrics;
   } else {
     report.answers.push({
       question: question.question,
       userAnswer: answer,
       preferredAnswer: question.preferred_answer,
       scoringStatus: "pending",
+      ...(speechMetrics && { speechMetrics }),
     });
   }
 

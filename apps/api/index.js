@@ -16,6 +16,7 @@ import userRoutes from "./routes/userRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import speechRoutes from "./routes/speechRoutes.js";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/speech", speechRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

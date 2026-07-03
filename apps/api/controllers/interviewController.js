@@ -131,12 +131,13 @@ export const getQuestions = async (req, res, next) => {
 
 export const submitAnswer = async (req, res, next) => {
   try {
-    const { questionIndex, answer } = req.validatedBody;
+    const { questionIndex, answer, speechMetrics } = req.validatedBody;
     const report = await interviewService.submitAnswer(
       req.interview,
       questionIndex,
       answer,
-      req.requestId
+      req.requestId,
+      speechMetrics ?? null
     );
     res.success(
       {

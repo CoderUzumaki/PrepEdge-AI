@@ -21,6 +21,13 @@ const reportSchema = new mongoose.Schema({
         default: "pending",
       },
       tags: [String],
+      speechMetrics: {
+        wordCount: Number,
+        fillerCount: Number,
+        wordsPerMinute: Number,
+        durationSeconds: Number,
+        fillerWords: [String],
+      },
       rawAiResponse: String,
       scoredAt: Date,
     },

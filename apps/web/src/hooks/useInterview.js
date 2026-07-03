@@ -47,8 +47,12 @@ export function useScoringStatus(id, enabled = true) {
 export function useSubmitAnswer(interviewId) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ questionIndex, answer }) =>
-      (await api.post(`/api/interviews/${interviewId}/answers`, { questionIndex, answer })).data,
+    mutationFn: async ({ questionIndex, answer, speechMetrics }) =>
+      (await api.post(`/api/interviews/${interviewId}/answers`, {
+        questionIndex,
+        answer,
+        ...(speechMetrics && { speechMetrics }),
+      })).data,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scoring-status", interviewId] });
     },
