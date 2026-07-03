@@ -257,7 +257,7 @@ export default function CreateInterview() {
               {step === 2 && (
                 <>
                   <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${drag ? "border-[var(--color-primary)] bg-indigo-50" : "border-[var(--color-border)]"}`}
+                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${drag ? "border-[var(--color-primary)] bg-[var(--color-surface)]" : "border-[var(--color-border)]"}`}
                     onDragEnter={(e) => { e.preventDefault(); setDrag(true); }}
                     onDragLeave={() => setDrag(false)}
                     onDragOver={(e) => e.preventDefault()}

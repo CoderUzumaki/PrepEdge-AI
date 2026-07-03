@@ -8,14 +8,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:bg-[#4338ca]",
+          "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90",
+        cta:
+          "bg-[var(--color-cta)] text-[var(--color-cta-foreground)] hover:opacity-90",
         secondary:
-          "bg-[var(--color-secondary)] text-[var(--color-foreground)] hover:bg-[#e5e7eb]",
+          "bg-[var(--color-secondary)] text-[var(--color-foreground)] hover:opacity-80",
         outline:
           "border border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-surface)]",
         ghost: "hover:bg-[var(--color-surface)]",
         destructive:
-          "bg-[var(--color-destructive)] text-white hover:bg-[#b91c1c]",
+          "bg-[var(--color-destructive)] text-white hover:opacity-90",
         link: "text-[var(--color-primary)] underline-offset-4 hover:underline",
       },
       size: {

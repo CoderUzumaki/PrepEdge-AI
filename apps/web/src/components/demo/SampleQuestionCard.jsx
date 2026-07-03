@@ -39,7 +39,7 @@ export function SampleQuestionCard() {
   }
 
   return (
-    <Card id="try-sample">
+    <Card id="try-sample" className="rounded-2xl border-[var(--color-border)] shadow-[var(--shadow-sm)]">
       <CardHeader>
         <CardTitle className="text-lg">Try a sample question</CardTitle>
         <p className="text-sm text-[var(--color-muted)]">

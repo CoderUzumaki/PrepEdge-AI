@@ -5,7 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="PrepEdge AI — AI mock interviews with instant scoring, voice analysis, and shareable PDF reports. Try a sample question free." />
-    <meta name="theme-color" content="#4f46e5" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <meta name="robots" content="index, follow" />
     <meta property="og:site_name" content="PrepEdge AI" />
     <meta property="og:type" content="website" />
@@ -13,6 +14,15 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="https://prepedgeai.vercel.app/" />
     <title>PrepEdge AI — AI Mock Interviews with Instant Feedback</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem("prepedge-theme") || "system";
+        var dark =
+          t === "dark" ||
+          (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.classList.add("dark");
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,52 +1,47 @@
 import { Link } from "react-router-dom";
 
 const footerLinkClass =
-  "rounded-sm text-sm text-[var(--color-muted)] transition-colors hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]";
+  "text-sm text-[var(--color-muted)] transition-colors hover:text-[var(--color-foreground)]";
 
 /**
- * Footer — site links and legal information.
+ * Footer — minimal Vercel-style site footer.
  */
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div>
-            <p className="text-sm font-semibold tracking-tight text-[var(--color-foreground)]">
-              PrepEdge AI
-            </p>
+    <footer className="mt-auto border-t border-[var(--color-border)]">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="col-span-2 md:col-span-1">
+            <p className="text-sm font-semibold tracking-tight">PrepEdge</p>
             <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">
-              AI-powered mock interviews to help you land your dream job.
+              AI mock interviews with instant feedback.
             </p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-[var(--color-foreground)]">Quick Links</h4>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">Product</h4>
             <div className="mt-3 flex flex-col gap-2">
-              <Link to="/about" className={footerLinkClass}>
-                About
-              </Link>
-              <Link to="/resources" className={footerLinkClass}>
-                Resources
-              </Link>
-              <Link to="/contact" className={footerLinkClass}>
-                Contact
-              </Link>
+              <Link to="/#features" className={footerLinkClass}>Features</Link>
+              <Link to="/#try-sample" className={footerLinkClass}>Try sample</Link>
+              <Link to="/about" className={footerLinkClass}>About</Link>
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-[var(--color-foreground)]">Legal</h4>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">Resources</h4>
             <div className="mt-3 flex flex-col gap-2">
-              <Link to="/privacy" className={footerLinkClass}>
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className={footerLinkClass}>
-                Terms of Service
-              </Link>
+              <Link to="/resources" className={footerLinkClass}>Resources</Link>
+              <Link to="/contact" className={footerLinkClass}>Contact</Link>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">Legal</h4>
+            <div className="mt-3 flex flex-col gap-2">
+              <Link to="/privacy" className={footerLinkClass}>Privacy</Link>
+              <Link to="/terms" className={footerLinkClass}>Terms</Link>
             </div>
           </div>
         </div>
-        <p className="mt-8 border-t border-[var(--color-border)] pt-6 text-center text-xs text-[var(--color-muted)]">
-          © {new Date().getFullYear()} PrepEdge AI. All rights reserved.
+        <p className="mt-10 text-xs text-[var(--color-muted)]">
+          © {new Date().getFullYear()} PrepEdge AI
         </p>
       </div>
     </footer>

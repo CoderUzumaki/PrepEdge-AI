@@ -1,27 +1,79 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterDemo } from "@/hooks/useDemo";
-import { DemoBanner } from "@/components/layout/DemoBanner";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, LogOut, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/api/errors";
 import Toast from "@/components/Toast";
 
-const navLinkClass =
-  "rounded-md px-1 py-0.5 text-sm text-[var(--color-muted)] transition-colors hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]";
+const publicNav = [
+  { to: "/#features", label: "Features", hash: true },
+  { to: "/#try-sample", label: "Try it", hash: true },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
+];
+
+const appNav = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/interview/setup", label: "Interviews" },
+  { to: "/practice", label: "Practice" },
+];
 
 /**
- * Header — site navigation with auth-aware links and mobile menu.
+ * PrepEdge logo mark — minimal triangle inspired by geometric SaaS marks.
+ */
+function LogoMark({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 2L2 19.5h20L12 2zm0 4.2L17.4 17.5H6.6L12 6.2z"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Header — Vercel-inspired navbar with frosted glass, centered links, and theme toggle.
  */
 export default function Header() {
   const { user, profile, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const enterDemo = useEnterDemo();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "error" });
+  const accountRef = useRef(null);
+
+  const isHome = location.pathname === "/";
+  const navItems = user ? appNav : publicNav;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setAccountOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -37,180 +89,228 @@ export default function Header() {
     }
   };
 
-  const navLinks = [
-    { to: "/dashboard", label: "Dashboard", auth: true },
-    { to: "/interview/setup", label: "New Interview", auth: true },
-    { to: "/practice", label: "Practice", auth: true },
-    { to: "/resources", label: "Resources" },
-    { to: "/about", label: "About" },
-    { to: "/contact", label: "Contact" },
-  ];
+  const navLinkClass = (active = false) =>
+    cn(
+      "rounded-full px-3 py-1.5 text-sm transition-colors",
+      active
+        ? "text-[var(--color-foreground)]"
+        : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
+    );
 
   return (
     <>
-      {!user && (
-        <DemoBanner onViewDemo={handleViewDemo} loading={enterDemo.isPending} />
-      )}
       {profile?.is_demo && (
-        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
-          You&apos;re viewing the read-only demo account.{" "}
-          <Link to="/signup" className="font-medium underline">Sign up</Link> to create your own interviews.
+        <div className="border-b border-amber-500/20 bg-amber-500/10 px-4 py-2 text-center text-sm text-amber-800 dark:text-amber-200">
+          Read-only demo account.{" "}
+          <Link to="/signup" className="font-medium underline underline-offset-2">
+            Create your free account
+          </Link>
         </div>
       )}
-      <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-card)]">
-        <div className="container mx-auto flex h-14 items-center justify-between px-4">
+
+      <header
+        className={cn(
+          "sticky top-0 z-50 w-full transition-[border-color,background-color,box-shadow] duration-200",
+          scrolled || !isHome
+            ? "border-b border-[var(--color-border)] bg-[var(--color-background)]/80 shadow-[var(--shadow-sm)] backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent"
+        )}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          {/* Logo */}
           <Link
             to="/"
-            className="rounded-md text-lg font-semibold tracking-tight text-[var(--color-foreground)] transition-colors hover:text-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]"
+            className="flex shrink-0 items-center gap-2 rounded-md text-[var(--color-foreground)] transition-opacity hover:opacity-80"
           >
-            PrepEdge AI
+            <LogoMark className="h-5 w-5" />
+            <span className="text-sm font-semibold tracking-tight">PrepEdge</span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-            {navLinks
-              .filter((l) => !l.auth || user)
-              .map((link) => (
-                <Link key={link.to} to={link.to} className={navLinkClass}>
+          {/* Center nav — desktop */}
+          <nav
+            className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 md:flex"
+            aria-label="Main"
+          >
+            {navItems.map((link) =>
+              link.hash ? (
+                <a key={link.to} href={link.to} className={navLinkClass()}>
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={navLinkClass(location.pathname === link.to)}
+                >
                   {link.label}
                 </Link>
-              ))}
+              )
+            )}
           </nav>
 
-          <div className="hidden items-center gap-2 md:flex">
+          {/* Right actions — desktop */}
+          <div className="hidden items-center gap-1 md:flex">
+            <ThemeToggle />
             {user ? (
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  aria-expanded={dropdownOpen}
+              <div className="relative ml-1" ref={accountRef}>
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className={cn(
+                    "inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm",
+                    "text-[var(--color-foreground)] hover:bg-[var(--color-surface)]",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+                  )}
+                  aria-expanded={accountOpen}
                   aria-haspopup="true"
                 >
-                  <User size={16} aria-hidden="true" />
-                  Account
-                </Button>
-                {dropdownOpen && (
+                  <span className="max-w-[120px] truncate">
+                    {profile?.name?.split(" ")[0] || "Account"}
+                  </span>
+                  <ChevronDown size={14} className="text-[var(--color-muted)]" />
+                </button>
+                {accountOpen && (
                   <div
-                    className="absolute right-0 mt-1 w-48 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] py-1 shadow-[var(--shadow-sm)]"
+                    className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] py-1 shadow-[var(--shadow-md)]"
                     role="menu"
                   >
                     <Link
-                      to="/profile"
-                      role="menuitem"
-                      className="block px-4 py-2 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:bg-[var(--color-surface)]"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <Link
                       to="/dashboard"
                       role="menuitem"
-                      className="block px-4 py-2 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:bg-[var(--color-surface)]"
-                      onClick={() => setDropdownOpen(false)}
+                      className="block px-4 py-2 text-sm hover:bg-[var(--color-surface)]"
+                      onClick={() => setAccountOpen(false)}
                     >
                       Dashboard
+                    </Link>
+                    <Link
+                      to="/profile"
+                      role="menuitem"
+                      className="block px-4 py-2 text-sm hover:bg-[var(--color-surface)]"
+                      onClick={() => setAccountOpen(false)}
+                    >
+                      Profile
                     </Link>
                     <button
                       type="button"
                       role="menuitem"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[var(--color-destructive)] hover:bg-[var(--color-surface)] focus-visible:outline-none focus-visible:bg-[var(--color-surface)]"
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[var(--color-destructive)] hover:bg-[var(--color-surface)]"
                     >
-                      <LogOut size={14} aria-hidden="true" /> Logout
+                      <LogOut size={14} /> Sign out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={handleViewDemo} disabled={enterDemo.isPending}>
-                  View Demo
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link to="/signup">Get Started</Link>
-                </Button>
+                <button
+                  type="button"
+                  onClick={handleViewDemo}
+                  disabled={enterDemo.isPending}
+                  className={cn(
+                    "hidden rounded-full px-3 py-1.5 text-sm text-[var(--color-muted)] sm:inline-flex",
+                    "hover:text-[var(--color-foreground)] transition-colors",
+                    "disabled:opacity-50"
+                  )}
+                >
+                  {enterDemo.isPending ? "Loading…" : "Demo"}
+                </button>
+                <Link
+                  to="/login"
+                  className="rounded-full px-3 py-1.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/signup"
+                  className={cn(
+                    "ml-1 inline-flex h-9 items-center rounded-full px-4 text-sm font-medium transition-opacity",
+                    "bg-[var(--color-cta)] text-[var(--color-cta-foreground)] hover:opacity-90"
+                  )}
+                >
+                  Sign Up
+                </Link>
               </>
             )}
           </div>
 
-          <button
-            type="button"
-            className={cn(
-              "rounded-md p-2 text-[var(--color-foreground)] md:hidden",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]"
-            )}
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile menu button */}
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
+        {/* Mobile drawer */}
         {mobileOpen && (
-          <div className="border-t border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 md:hidden">
-            <nav className="space-y-1" aria-label="Mobile">
-              {navLinks
-                .filter((l) => !l.auth || user)
-                .map((link) => (
+          <div className="border-t border-[var(--color-border)] bg-[var(--color-background)]/95 px-4 py-4 backdrop-blur-xl md:hidden">
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              {navItems.map((link) =>
+                link.hash ? (
+                  <a
+                    key={link.to}
+                    href={link.to}
+                    className="rounded-lg px-3 py-2.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="block rounded-md px-2 py-2 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
+                    className="rounded-lg px-3 py-2.5 text-sm text-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
                   </Link>
-                ))}
+                )
+              )}
+            </nav>
+            <div className="mt-4 flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
               {user ? (
                 <>
-                  <Link
-                    to="/profile"
-                    className="block rounded-md px-2 py-2 text-sm"
-                    onClick={() => setMobileOpen(false)}
-                  >
+                  <Link to="/profile" className="rounded-lg px-3 py-2.5 text-sm" onClick={() => setMobileOpen(false)}>
                     Profile
                   </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="block w-full rounded-md px-2 py-2 text-left text-sm text-[var(--color-destructive)]"
+                    className="rounded-lg px-3 py-2.5 text-left text-sm text-[var(--color-destructive)]"
                   >
-                    Logout
+                    Sign out
                   </button>
                 </>
               ) : (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => { setMobileOpen(false); handleViewDemo(); }}
-                    className="block w-full rounded-md px-2 py-2 text-left text-sm font-medium text-[var(--color-primary)]"
-                  >
+                  <Button variant="outline" className="w-full rounded-full" onClick={handleViewDemo} disabled={enterDemo.isPending}>
                     View Demo
-                  </button>
-                  <Link
-                    to="/login"
-                    className="block rounded-md px-2 py-2 text-sm"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Login
-                  </Link>
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <Link to="/login">Log In</Link>
+                  </Button>
                   <Link
                     to="/signup"
-                    className="block rounded-md px-2 py-2 text-sm font-medium text-[var(--color-primary)]"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-full bg-[var(--color-cta)] text-sm font-medium text-[var(--color-cta-foreground)]"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Get Started
+                    Sign Up
                   </Link>
                 </>
               )}
-            </nav>
+            </div>
           </div>
         )}
       </header>
+
       <Toast
         show={toast.show}
         message={toast.message}
