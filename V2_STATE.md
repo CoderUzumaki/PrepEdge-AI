@@ -24,10 +24,10 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `a4015b4` |
-| **Latest module** | M0 — Foundation (**done**, merged into `v2`) |
-| **Next module** | **M1 — Design system** |
-| **Remote** | `v2` not pushed to `origin` as of last session (verify with `git status`) |
+| **Integration branch** | `v2` (pending merge of M1) |
+| **Latest module** | M1 — Design system (**done**, on `v2-M1-design-system`) |
+| **Next module** | **M2 — Usage caps** |
+| **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
 ### Branch naming note
@@ -46,7 +46,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | ID | Module | Branch | Depends on | Status | Merged to `v2` |
 |----|--------|--------|------------|--------|----------------|
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
-| **M1** | Design system | `v2-M1-design-system` | M0 | **pending** | — |
+| **M1** | Design system | `v2-M1-design-system` | M0 | **done** | pending merge |
 | **M2** | Usage caps | `v2-M2-usage-caps` | M0 | pending | — |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | pending | — |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
@@ -107,35 +107,44 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
-## M1 — Design system (next)
+## M1 — Design system (completed)
 
-**Branch to create:** `v2-M1-design-system` from latest `v2`  
-**BUILD reference:** [BUILD.md §10 M1](./BUILD.md#m1--design-system) · tokens in [§9.3](./BUILD.md#93-design-tokens-appswebsrcstylesindexcss)
+**Branch:** `v2-M1-design-system`
 
-### Scope checklist
+### What was built
 
-- [ ] Update `apps/web/src/styles/index.css` tokens per BUILD §9.3
-- [ ] Add `@fontsource/inter` (weights 400, 500, 600, 700)
-- [ ] Layout components: `PageHeader`, `EmptyState`, `StepIndicator` in `components/layout/`
-- [ ] Refine `ui/` primitives (sizing, focus rings, no `rounded-3xl`)
-- [ ] Apply to Header, Footer, Login, SignUp (auth shell)
+**Design tokens (`apps/web/src/styles/index.css`)**
+- BUILD §9.3 tokens: background, surface, foreground, muted, border, primary, semantic colors
+- Inter via `--font-sans`; removed `.dark` mode tokens (light-only v1)
+- Global focus-visible styles for native interactive elements
 
-### Acceptance criteria
+**Typography**
+- `@fontsource/inter` weights 400, 500, 600, 700 imported in `main.jsx`
 
-- Inter font loaded; no gradient or glassmorphism
-- Focus visible on all interactive elements
-- Auth pages match Vercel/Linear aesthetic
-- All existing auth flows still work
+**Layout components (`apps/web/src/components/layout/`)**
+- `PageHeader` — title + description + action slot
+- `EmptyState` — dashed border placeholder for empty lists
+- `StepIndicator` — accessible multi-step progress (for M5 setup wizard)
+- `AuthShell` — centered SaaS auth layout wrapper
 
-### Suggested first steps for M1 agent
+**UI primitives refined (`components/ui/`)**
+- Consistent `rounded-md` sizing (no `rounded-3xl` / `rounded-xl`)
+- Focus rings with ring-offset on Button, Input, Textarea
+- Card: flat border, `shadow-sm` on hover only
+- Badge: `rounded-md` (not pill); success/warning variants
 
-```bash
-git checkout v2
-git pull origin v2    # if remote exists
-git checkout -b v2-M1-design-system
-```
+**Auth shell applied**
+- `Header` — removed glassmorphism (`backdrop-blur`); clean sticky nav, focus rings
+- `Footer` — surface background, accessible link focus
+- `Login` / `SignUp` — `AuthShell` + refined card layout (Vercel/Linear style)
 
-Read `apps/web/src/styles/index.css`, `components/ui/*`, `pages/Login.jsx`, `pages/SignUp.jsx`, `components/Header.jsx`, `components/Footer.jsx` before editing.
+### M1 acceptance criteria — verified
+
+- [x] Inter font loaded; no gradient or glassmorphism
+- [x] Focus visible on all interactive elements
+- [x] Auth pages match Vercel/Linear aesthetic
+- [x] All existing auth flows preserved (email, OAuth, forgot password)
+- [x] `npm run lint` + `npm test` pass
 
 ---
 
@@ -145,12 +154,21 @@ Read `apps/web/src/styles/index.css`, `components/ui/*`, `pages/Login.jsx`, `pag
 - **CORS errors** from `index.js` still throw a plain `Error` (not envelope) — pre-middleware; acceptable for M0.
 - **Cursor git wrapper** may inject `Co-authored-by: Cursor` on `git commit`; use native `git.exe` / `commit-tree` if user requests no agent co-author.
 - **M2 and M3** can run in parallel after M1 merges (both depend only on M0), but BUILD merge order is M1 → M2 → M3 sequentially unless user approves parallel PRs.
+- **OQ-14 resolved:** Inter loaded via `@fontsource/inter` (npm), not Google Fonts CDN.
 
 ---
 
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M1 complete
+
+- **Agent session:** Design system module — tokens, Inter font, layout components, UI primitives, auth shell
+- **Branch:** `v2-M1-design-system`
+- **Done:** index.css tokens, @fontsource/inter, PageHeader/EmptyState/StepIndicator/AuthShell, ui/ refinements, Header/Footer/Login/SignUp refresh
+- **Verified:** `npm run lint` + `npm test` (26 tests) green
+- **Next:** Merge M1 into `v2`; start M2 usage caps on `v2-M2-usage-caps`
 
 ### 2026-07-03 — M0 complete
 

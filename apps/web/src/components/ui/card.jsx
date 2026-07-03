@@ -1,10 +1,13 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Card — flat bordered container with subtle hover elevation.
+ */
 export function Card({ className, ...props }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm",
+        "rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] transition-shadow hover:shadow-[var(--shadow-sm)]",
         className
       )}
       {...props}
@@ -17,7 +20,12 @@ export function CardHeader({ className, ...props }) {
 }
 
 export function CardTitle({ className, ...props }) {
-  return <h3 className={cn("text-lg font-semibold leading-none", className)} {...props} />;
+  return (
+    <h3
+      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+      {...props}
+    />
+  );
 }
 
 export function CardDescription({ className, ...props }) {
@@ -26,4 +34,8 @@ export function CardDescription({ className, ...props }) {
 
 export function CardContent({ className, ...props }) {
   return <div className={cn("p-6 pt-0", className)} {...props} />;
+}
+
+export function CardFooter({ className, ...props }) {
+  return <div className={cn("flex items-center p-6 pt-0", className)} {...props} />;
 }
