@@ -7,12 +7,15 @@
 
 This document is the authoritative guide for building PrepEdge AI v2. It covers branching, module dependencies, coding standards, API contracts, logging, design system, and per-module acceptance criteria.
 
+**Live build state:** [V2_STATE.md](./V2_STATE.md) — current module progress, handoff context, and session log. All agents **must read and update** this file (see [Section 2.5](#25-agent-handoff-v2_statemd)).
+
 ---
 
 ## Table of contents
 
 1. [Prerequisites](#1-prerequisites)
 2. [Branching workflow](#2-branching-workflow)
+   - [2.5 Agent handoff (V2_STATE.md)](#25-agent-handoff-v2_statemd)
 3. [Module dependency graph](#3-module-dependency-graph)
 4. [Repository layout](#4-repository-layout)
 5. [Dependency rules](#5-dependency-rules)
@@ -128,6 +131,25 @@ These module pairs may run in parallel **after their shared dependencies are mer
 
 All other modules are strictly sequential.
 
+### 2.5 Agent handoff (V2_STATE.md)
+
+**[V2_STATE.md](./V2_STATE.md)** is the single living record of v2 rebuild progress. Coding agents and contributors must follow this workflow:
+
+| When | Action |
+|------|--------|
+| **Start of session** | Read `V2_STATE.md` (module status, session log, known decisions) and this file’s Section 10 for the target module. |
+| **Start a module** | Set that module’s status to `in progress` in `V2_STATE.md`; note the branch name. |
+| **End of session** | Update module status (`done` / `blocked`), append a session-log entry (branch, commit hash, summary, next step). |
+| **Merge to `v2`** | Mark module as merged in `V2_STATE.md` with commit hash. |
+
+**Rules:**
+
+1. Do not begin a module until its dependencies are `done` and merged into `v2` (see `V2_STATE.md` module table).
+2. Treat **one module per session** unless the user explicitly requests otherwise; stop and notify after each module.
+3. Do not mark a module complete until its acceptance criteria (below) pass and `npm run lint` + `npm test` succeed.
+4. Prefer updating `V2_STATE.md` over duplicating progress notes in chat — the file is the handoff source of truth.
+5. Use hyphenated module branches (`v2-M1-design-system`) if `v2/M1-*` conflicts with the `v2` branch ref (documented in `V2_STATE.md`).
+
 ---
 
 ## 3. Module dependency graph
@@ -181,6 +203,8 @@ flowchart TD
 ```
 PrepEdge-AI/
 ├── BUILD.md                    ← this file
+├── V2_STATE.md                 ← live module progress & agent handoff (update every session)
+├── PLAN.md                     ← product requirements (PRD)
 ├── README.md
 ├── LEARN.md
 ├── package.json                ← workspace root
@@ -666,16 +690,18 @@ export const log = (level, message, meta = {}) => {
 
 #### Scope
 
-- [ ] `packages/shared/src/errors/` — codes, `AppError`, envelope helpers
-- [ ] `apps/api/middleware/requestId.js`
-- [ ] `apps/api/middleware/responseEnvelope.js`
-- [ ] Refactor `apps/api/middleware/errorHandler.js` for envelope
-- [ ] `apps/api/utils/logger.js`
-- [ ] Migrate **all** routes and controllers to `res.success()` / `res.fail()`
-- [ ] `apps/web/src/lib/api/errors.js` — `ApiError` class
-- [ ] Update `apps/web/src/lib/api/client.js` interceptor
-- [ ] Update all hooks to work with unwrapped `data`
-- [ ] Tests: envelope shape, error codes, requestId header
+- [x] `packages/shared/src/errors/` — codes, `AppError`, envelope helpers
+- [x] `apps/api/middleware/requestId.js`
+- [x] `apps/api/middleware/responseEnvelope.js`
+- [x] Refactor `apps/api/middleware/errorHandler.js` for envelope
+- [x] `apps/api/utils/logger.js`
+- [x] Migrate **all** routes and controllers to `res.success()` / `res.fail()`
+- [x] `apps/web/src/lib/api/errors.js` — `ApiError` class
+- [x] Update `apps/web/src/lib/api/client.js` interceptor
+- [x] Update all hooks to work with unwrapped `data`
+- [x] Tests: envelope shape, error codes, requestId header
+
+> **Status:** Done — merged to `v2` @ `a4015b4`. See [V2_STATE.md](./V2_STATE.md).
 
 #### Acceptance criteria
 
