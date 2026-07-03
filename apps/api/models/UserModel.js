@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+const quotaCounterSchema = new mongoose.Schema(
+  {
+    count: { type: Number, default: 0 },
+    period_start: { type: Date, default: () => new Date() },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema({
   firebase_user_id: { type: String, required: true, unique: true, trim: true },
   email: { type: String, required: true, unique: true, trim: true },
@@ -21,6 +29,12 @@ const userSchema = new mongoose.Schema({
       enum: ["fresher", "junior", "mid", "senior"],
       default: "fresher",
     },
+  },
+  usage_quotas: {
+    interviews_month: { type: quotaCounterSchema, default: () => ({}) },
+    practice_day: { type: quotaCounterSchema, default: () => ({}) },
+    resume_week: { type: quotaCounterSchema, default: () => ({}) },
+    stt_day: { type: quotaCounterSchema, default: () => ({}) },
   },
   schemaVersion: { type: Number, default: 2 },
   created_at: { type: Date, default: Date.now },

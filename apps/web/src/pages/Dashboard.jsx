@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useDashboardAnalytics } from "@/hooks/useDashboard";
+import { useQuotas } from "@/hooks/useQuotas";
 import { useReports } from "@/hooks/useReport";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { QuotaBadge } from "@/components/layout/QuotaBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +14,10 @@ import { getErrorMessage } from "@/lib/api/errors";
 
 export default function Dashboard() {
   const { data: analytics, isLoading: analyticsLoading, error } = useDashboardAnalytics();
+  const { data: quotas, isLoading: quotasLoading } = useQuotas();
   const { data: reports, isLoading: reportsLoading } = useReports();
 
-  if (analyticsLoading || reportsLoading) {
+  if (analyticsLoading || reportsLoading || quotasLoading) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-6">
         <Skeleton className="h-10 w-64" />
@@ -44,14 +48,52 @@ export default function Dashboard() {
     ? (analytics.scores.reduce((s, r) => s + r.score, 0) / analytics.scores.length).toFixed(1)
     : "—";
 
+  const interviewsAtLimit = quotas?.interviews_month?.remaining === 0;
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button asChild>
-          <Link to="/interview/setup">New Interview</Link>
-        </Button>
-      </div>
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <PageHeader
+        title="Dashboard"
+        description="Track your scores, usage, and recent interview performance."
+        action={
+          interviewsAtLimit ? (
+            <Button disabled>New Interview</Button>
+          ) : (
+            <Button asChild>
+              <Link to="/interview/setup">New Interview</Link>
+            </Button>
+          )
+        }
+      />
+
+      {quotas && (
+        <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <QuotaBadge
+            label="Mock interviews"
+            used={quotas.interviews_month.used}
+            limit={quotas.interviews_month.limit}
+            resetsAt={quotas.interviews_month.resetsAt}
+          />
+          <QuotaBadge
+            label="Practice today"
+            used={quotas.practice_day.used}
+            limit={quotas.practice_day.limit}
+            resetsAt={quotas.practice_day.resetsAt}
+          />
+          <QuotaBadge
+            label="Resume uploads"
+            used={quotas.resume_week.used}
+            limit={quotas.resume_week.limit}
+            resetsAt={quotas.resume_week.resetsAt}
+          />
+          <QuotaBadge
+            label="Voice transcriptions"
+            used={quotas.stt_day.used}
+            limit={quotas.stt_day.limit}
+            resetsAt={quotas.stt_day.resetsAt}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card>
@@ -151,7 +193,13 @@ export default function Dashboard() {
           {!reports?.length ? (
             <div className="text-center py-8">
               <p className="text-[var(--color-muted)] mb-4">No interviews yet. Start your first one!</p>
-              <Button asChild><Link to="/interview/setup">Create Interview</Link></Button>
+              {interviewsAtLimit ? (
+                <Button disabled>Create Interview</Button>
+              ) : (
+                <Button asChild>
+                  <Link to="/interview/setup">Create Interview</Link>
+                </Button>
+              )}
             </div>
           ) : (
             <div className="space-y-3">

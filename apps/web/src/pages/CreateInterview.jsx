@@ -1,6 +1,10 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetupInterview } from "@/hooks/useInterview";
+import { useQuotas } from "@/hooks/useQuotas";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { QuotaBadge } from "@/components/layout/QuotaBadge";
+import { StepIndicator } from "@/components/layout/StepIndicator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +19,7 @@ const STEPS = ["Basics", "Job Details", "Resume & Focus"];
 export default function CreateInterview() {
   const navigate = useNavigate();
   const setupMutation = useSetupInterview();
+  const { data: quotas, isLoading: quotasLoading } = useQuotas();
   const [step, setStep] = useState(0);
   const [drag, setDrag] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "error" });
@@ -59,17 +64,41 @@ export default function CreateInterview() {
     return true;
   };
 
-  return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-3xl font-bold mb-2">Interview Setup</h1>
-      <p className="text-[var(--color-muted)] mb-6">Step {step + 1} of {STEPS.length}: {STEPS[step]}</p>
+  const interviewsAtLimit = quotas?.interviews_month?.remaining === 0;
+  const resumeAtLimit = quotas?.resume_week?.remaining === 0;
+  const resumeSelected = Boolean(form.resume);
 
-      <div className="w-full bg-[var(--color-secondary)] rounded-full h-2 mb-8">
-        <div
-          className="bg-[var(--color-primary)] h-2 rounded-full transition-all"
-          style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-        />
-      </div>
+  return (
+    <div className="container mx-auto max-w-3xl px-4 py-8">
+      <PageHeader
+        title="Interview Setup"
+        description="Configure your mock interview in three steps."
+      />
+
+      {quotas && !quotasLoading && (
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <QuotaBadge
+            label="Mock interviews this month"
+            used={quotas.interviews_month.used}
+            limit={quotas.interviews_month.limit}
+            resetsAt={quotas.interviews_month.resetsAt}
+          />
+          <QuotaBadge
+            label="Resume uploads this week"
+            used={quotas.resume_week.used}
+            limit={quotas.resume_week.limit}
+            resetsAt={quotas.resume_week.resetsAt}
+          />
+        </div>
+      )}
+
+      {interviewsAtLimit && (
+        <p className="mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-warning)]">
+          You&apos;ve used all mock interviews for this month. Your quota resets on the 1st (UTC).
+        </p>
+      )}
+
+      <StepIndicator steps={STEPS} currentStep={step} className="mb-8" />
 
       <Card>
         <CardHeader><CardTitle>{STEPS[step]}</CardTitle></CardHeader>
@@ -145,6 +174,11 @@ export default function CreateInterview() {
                 ) : (
                   <p className="text-sm text-[var(--color-muted)]">Drop PDF resume or click to upload (optional)</p>
                 )}
+                {resumeAtLimit && !form.resume && (
+                  <p className="mt-2 text-xs text-[var(--color-warning)]">
+                    Weekly resume upload limit reached. Continue without a resume or wait until Monday (UTC).
+                  </p>
+                )}
                 <input ref={fileRef} type="file" accept=".pdf" className="hidden" onChange={(e) => e.target.files[0] && set("resume", e.target.files[0])} />
               </div>
               <div className="space-y-2">
@@ -163,7 +197,10 @@ export default function CreateInterview() {
                 Next <ArrowRight size={16} />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={setupMutation.isPending}>
+              <Button
+                onClick={handleSubmit}
+                disabled={setupMutation.isPending || interviewsAtLimit || (resumeSelected && resumeAtLimit)}
+              >
                 {setupMutation.isPending ? "Setting up..." : "Start Interview"}
               </Button>
             )}

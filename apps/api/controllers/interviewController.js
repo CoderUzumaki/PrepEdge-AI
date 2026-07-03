@@ -1,9 +1,12 @@
 import cloudinary from "../utils/cloudinary.js";
 import streamifier from "streamifier";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
+import ResumeCache from "../models/ResumeCacheModel.js";
 import * as interviewService from "../services/interviewService.js";
 import * as userService from "../services/userService.js";
 import * as resumeService from "../services/resumeService.js";
+import * as quotaService from "../services/quotaService.js";
+import { hashBuffer } from "../utils/hash.js";
 
 /**
  * @module controllers/interviewController
@@ -29,10 +32,23 @@ export const setupInterview = async (req, res, next) => {
     const user = await userService.getUserByFirebaseId(req.firebaseUser.uid);
     const data = req.validatedBody;
 
+    quotaService.assertWithinLimit(user, "interviews_month");
+
     let resumeLink = null;
     let resumeSummary = null;
+    let consumeResumeQuota = false;
 
     if (req.file?.buffer) {
+      const fileHash = hashBuffer(req.file.buffer);
+      const cached = await ResumeCache.findOne({
+        fileHash,
+        expiresAt: { $gt: new Date() },
+      });
+      if (!cached) {
+        quotaService.assertWithinLimit(user, "resume_week");
+        consumeResumeQuota = true;
+      }
+
       if (process.env.CLOUDINARY_CLOUD_NAME) {
         const result = await uploadToCloudinary(req.file.buffer);
         resumeLink = result.secure_url;
@@ -40,6 +56,11 @@ export const setupInterview = async (req, res, next) => {
       const pdfData = await pdfParse(req.file.buffer);
       const text = pdfData.text.slice(0, 4000);
       resumeSummary = await resumeService.getOrCreateResumeSummary(req.file.buffer, text);
+    }
+
+    await quotaService.checkAndIncrement(user, "interviews_month");
+    if (consumeResumeQuota) {
+      await quotaService.checkAndIncrement(user, "resume_week");
     }
 
     const interview = await interviewService.createInterview(
@@ -66,6 +87,7 @@ export const setupInterview = async (req, res, next) => {
 export const createPractice = async (req, res, next) => {
   try {
     const user = await userService.getUserByFirebaseId(req.firebaseUser.uid);
+    await quotaService.checkAndIncrement(user, "practice_day");
     const interview = await interviewService.createPracticeInterview(
       user._id.toString(),
       req.validatedBody

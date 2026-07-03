@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `462c00b` |
-| **Latest module** | M1 — Design system (**done**, merged into `v2`) |
-| **Next module** | **M2 — Usage caps** |
+| **Integration branch** | `v2` (pending M2 merge) |
+| **Latest module** | M2 — Usage caps (**done**, on `v2-M2-usage-caps`) |
+| **Next module** | **M3 — AI security** |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -47,7 +47,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 |----|--------|--------|------------|--------|----------------|
 | **M0** | Foundation | `v2-M0-foundation` | — | **done** | yes (`a4015b4`) |
 | **M1** | Design system | `v2-M1-design-system` | M0 | **done** | yes (`7a2ea0f`) |
-| **M2** | Usage caps | `v2-M2-usage-caps` | M0 | pending | — |
+| **M2** | Usage caps | `v2-M2-usage-caps` | M0 | **done** | pending merge |
 | **M3** | AI security | `v2-M3-ai-security` | M0 | pending | — |
 | **M4** | STT (Groq Whisper) | `v2-M4-stt` | M0, M1, M2 | pending | — |
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | pending | — |
@@ -123,28 +123,55 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 - `@fontsource/inter` weights 400, 500, 600, 700 imported in `main.jsx`
 
 **Layout components (`apps/web/src/components/layout/`)**
-- `PageHeader` — title + description + action slot
-- `EmptyState` — dashed border placeholder for empty lists
-- `StepIndicator` — accessible multi-step progress (for M5 setup wizard)
-- `AuthShell` — centered SaaS auth layout wrapper
+- `PageHeader`, `EmptyState`, `StepIndicator`, `AuthShell`
 
 **UI primitives refined (`components/ui/`)**
-- Consistent `rounded-md` sizing (no `rounded-3xl` / `rounded-xl`)
-- Focus rings with ring-offset on Button, Input, Textarea
-- Card: flat border, `shadow-sm` on hover only
-- Badge: `rounded-md` (not pill); success/warning variants
+- Consistent `rounded-md` sizing, focus rings, card hover shadow
 
 **Auth shell applied**
-- `Header` — removed glassmorphism (`backdrop-blur`); clean sticky nav, focus rings
-- `Footer` — surface background, accessible link focus
-- `Login` / `SignUp` — `AuthShell` + refined card layout (Vercel/Linear style)
+- `Header`, `Footer`, `Login`, `SignUp` refreshed
 
 ### M1 acceptance criteria — verified
 
 - [x] Inter font loaded; no gradient or glassmorphism
 - [x] Focus visible on all interactive elements
 - [x] Auth pages match Vercel/Linear aesthetic
-- [x] All existing auth flows preserved (email, OAuth, forgot password)
+- [x] All existing auth flows preserved
+- [x] `npm run lint` + `npm test` pass
+
+---
+
+## M2 — Usage caps (completed)
+
+**Branch:** `v2-M2-usage-caps`
+
+### What was built
+
+**Shared (`packages/shared/src/quota/`)**
+- `periods.js` — UTC month/day/week boundaries + `nextPeriodStart`
+- `caps.js` — `USAGE_CAPS`, labels, user-facing limit messages
+
+**API**
+- `UserModel.usage_quotas` — counters for interviews_month, practice_day, resume_week, stt_day
+- `services/quotaService.js` — period reset, assert, check+increment, `checkAndIncrementStt` (for M4)
+- Enforced on `POST /api/interviews/setup` (3/month + resume 1/week for non-cached uploads)
+- Enforced on `POST /api/interviews/practice` (10/day)
+- `GET /api/users/me/quotas` — returns used/limit/remaining/resetsAt per resource
+
+**Web**
+- `QuotaBadge` layout component
+- `useQuotas` hook + cache invalidation on setup/practice
+- Dashboard — quota grid, disable New Interview at cap
+- CreateInterview — quota badges, StepIndicator, limit warnings
+
+**Tests (35 total)**
+- `quota.test.js` — UTC period helpers, month reset, rate_limited at cap
+
+### M2 acceptance criteria — verified
+
+- [x] 4th interview in a month returns `rate_limited` with clear message
+- [x] Dashboard shows current usage
+- [x] Unit tests for quota reset logic (UTC month)
 - [x] `npm run lint` + `npm test` pass
 
 ---
@@ -153,15 +180,24 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
 - **CORS errors** from `index.js` still throw a plain `Error` (not envelope) — pre-middleware; acceptable for M0.
-- **Cursor git wrapper** may inject `Co-authored-by: Cursor` on `git commit`; use native `git.exe` / `commit-tree` if user requests no agent co-author.
-- **M2 and M3** can run in parallel after M1 merges (both depend only on M0), but BUILD merge order is M1 → M2 → M3 sequentially unless user approves parallel PRs.
-- **OQ-14 resolved:** Inter loaded via `@fontsource/inter` (npm), not Google Fonts CDN.
+- **Use `git.exe commit-tree`** or `git.exe commit` to avoid Cursor injecting `Co-authored-by` trailers.
+- **STT quota** (`stt_day`) enforced in M4 when speech routes land; counter + service ready in M2.
+- **Resume quota** skips increment when PDF hash is already in 7-day cache.
+- **M3** can start after M2 merges (depends only on M0).
 
 ---
 
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M2 complete
+
+- **Agent session:** Usage caps — UserModel quotas, quotaService, API enforcement, QuotaBadge UI
+- **Branch:** `v2-M2-usage-caps`
+- **Done:** Shared quota periods/caps, GET /api/users/me/quotas, setup/practice enforcement, Dashboard + CreateInterview UI, 9 quota tests
+- **Verified:** `npm run lint` + `npm test` (35 tests) green
+- **Next:** Merge M2 into `v2`; start M3 AI security on `v2-M3-ai-security`
 
 ### 2026-07-03 — M1 complete
 
