@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /practice
+Disallow: /interview/
+
+Sitemap: https://prepedgeai.vercel.app/sitemap.xml

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import api from "@/lib/api/client";
+import { trackEvent } from "@/lib/analytics";
 
 const AuthContext = createContext(null);
 
@@ -26,6 +27,7 @@ export function AuthProvider({ children }) {
       try {
         const res = await api.post("/api/auth/register");
         setProfile(res.data.user);
+        trackEvent("signup");
       } catch {
         setProfile(null);
       }

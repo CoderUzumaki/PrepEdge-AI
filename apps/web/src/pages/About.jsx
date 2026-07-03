@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageSeo } from "@/components/seo/PageSeo";
 
 const steps = [
   { title: "Setup", desc: "Upload your resume and configure role, company, and interview type." },
@@ -17,6 +18,11 @@ const stack = [
 export default function About() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
+      <PageSeo
+        title="About"
+        description="Learn how PrepEdge AI helps job seekers practice mock interviews with AI scoring, voice analysis, and detailed reports."
+        path="/about"
+      />
       <h1 className="mb-4 text-4xl font-bold">About PrepEdge AI</h1>
       <p className="mb-10 leading-relaxed text-[var(--color-muted)]">
         PrepEdge AI is an AI-powered interview preparation platform that helps job seekers

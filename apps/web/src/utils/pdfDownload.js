@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { computeSpeechSummary } from "@prepedge/shared";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * @param {Object} report
@@ -120,6 +121,7 @@ export function downloadReportPdf(report, interview) {
   });
 
   doc.save(`${title.replace(/\s+/g, "_")}_report.pdf`);
+  trackEvent("pdf_download");
 }
 
 function truncate(text, max) {

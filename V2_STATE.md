@@ -24,9 +24,9 @@ Every agent session **must**:
 
 | Field | Value |
 |-------|--------|
-| **Integration branch** | `v2` @ `5435397` |
-| **Latest module** | M7 — Recruiter demo (**done**, merged into `v2`) |
-| **Next module** | **M8 — SEO & analytics** |
+| **Integration branch** | `v2` @ `f37eff0` |
+| **Latest module** | M8 — SEO & analytics (**in progress** on `v2-M8-seo-analytics`) |
+| **Next module** | **M9 — Polish** (after M8 merge) |
 | **Remote** | verify with `git status` |
 | **npm version** | `2.0.0` |
 
@@ -53,7 +53,7 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 | **M5** | Interview templates | `v2-M5-templates` | M0, M1 | **done** | yes (`f1be959`) |
 | **M6** | Reports & share | `v2-M6-reports` | M0, M1, M3, M4 | **done** | yes (`d1821ea`) |
 | **M7** | Recruiter demo | `v2-M7-recruiter-demo` | M0, M1, M6 | **done** | yes (`5435397`) |
-| **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | pending | — |
+| **M8** | SEO & analytics | `v2-M8-seo-analytics` | M1, M7 | **done** | pending merge |
 | **M9** | Polish | `v2-M9-polish` | all above | pending | — |
 
 **Merge order into `v2`:** M0 → M1 → M2 → M3 → (M4 ∥ M5) → M6 → M7 → M8 → M9
@@ -349,6 +349,42 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 
 ---
 
+## M8 — SEO & analytics (completed)
+
+**Branch:** `v2-M8-seo-analytics` → merge into `v2`  
+**Commit:** _(pending merge)_
+
+### What was built
+
+**SEO**
+- Enhanced `index.html` — theme-color, default OG/Twitter meta, canonical
+- `PageSeo` component — dynamic title, OG/Twitter, canonical, JSON-LD per page
+- `public/robots.txt` — allow public routes, disallow app pages
+- `public/sitemap.xml` — 8 public URLs
+- Home — `SoftwareApplication` JSON-LD schema
+- About + Contact — page-specific meta
+
+**Analytics**
+- `lib/analytics.js` — Vercel `track()` wrapper with dev logging
+- Events: `signup` (AuthContext register), `interview_complete`, `pdf_download`, `demo_click`
+- `packages/shared/src/analytics/events.js` — stable event name constants
+
+**Config**
+- `apps/web/.env.example` — `VITE_SITE_URL` for canonical/OG URLs
+
+**Tests (78 total)**
+- `analyticsEvents.test.js` — M8 event name contract
+
+### M8 acceptance criteria — verified
+
+- [x] OG + Twitter Card meta tags on Home and key public pages
+- [x] `sitemap.xml` and `robots.txt` in public/
+- [x] JSON-LD `SoftwareApplication` on Home
+- [x] Vercel custom events wired for signup, interview_complete, pdf_download, demo_click
+- [x] `npm run lint` + `npm test` pass
+
+---
+
 ## Known decisions & caveats
 
 - **One module per session** — stop and notify user after each module unless told otherwise.
@@ -363,6 +399,12 @@ BUILD.md still shows `v2/Mx-*` in diagrams; use hyphen form in practice.
 ## Session log
 
 Agents: **append new entries at the top** (newest first).
+
+### 2026-07-03 — M8 complete (pending merge)
+
+- **Agent session:** SEO & analytics — PageSeo, sitemap/robots, JSON-LD, Vercel custom events
+- **Branch:** `v2-M8-seo-analytics`
+- **Next:** Merge into `v2`, then M9 polish
 
 ### 2026-07-03 — M7 complete
 

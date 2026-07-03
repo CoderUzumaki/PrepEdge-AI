@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useEnterDemo } from "@/hooks/useDemo";
+import { PageSeo } from "@/components/seo/PageSeo";
+import { DEFAULT_DESCRIPTION, getSiteUrl } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SampleQuestionCard } from "@/components/demo/SampleQuestionCard";
@@ -9,6 +11,21 @@ import { Mic, BarChart3, FileText, Sparkles, CheckCircle2 } from "lucide-react";
 import Toast from "@/components/Toast";
 import { getErrorMessage } from "@/lib/api/errors";
 import { useState } from "react";
+
+const homeJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "PrepEdge AI",
+  applicationCategory: "EducationalApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  description: DEFAULT_DESCRIPTION,
+  url: getSiteUrl(),
+};
 
 const features = [
   {
@@ -56,6 +73,7 @@ export default function Home() {
 
   return (
     <div>
+      <PageSeo path="/" jsonLd={homeJsonLd} />
       <section className="container mx-auto px-4 py-16 md:py-20">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>

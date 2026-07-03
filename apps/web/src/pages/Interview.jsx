@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Toast from "@/components/Toast";
 import { getErrorMessage } from "@/lib/api/errors";
+import { trackEvent } from "@/lib/analytics";
 import { analyzeTranscript } from "@/utils/speechAnalysis";
 import { ArrowRight, Pause, Volume2 } from "lucide-react";
 
@@ -72,6 +73,7 @@ export default function Interview() {
       await updateProgress.mutateAsync({ currentQuestionIndex: currentIndex + 1 });
 
       if (currentIndex + 1 >= questions.length) {
+        trackEvent("interview_complete");
         navigate(`/interview/report/${interviewId}`);
       } else {
         setCurrentIndex((i) => i + 1);

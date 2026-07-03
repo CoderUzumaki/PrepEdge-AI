@@ -13,3 +13,4 @@ export * from "./sanitizer/inputSanitizer.js";
 export * from "./speech/analyzeTranscript.js";
 export * from "./speech/speechSummary.js";
 export * from "./demo/sampleQuestion.js";
+export * from "./analytics/events.js";
