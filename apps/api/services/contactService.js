@@ -7,6 +7,16 @@ import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 import { AppError, ERROR_CODES } from "@prepedge/shared";
 
+/** Escape HTML special characters to prevent injection in email bodies. */
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 /**
  * Sends a contact form message to the configured inbox.
  * @param {Object} data - Validated contact form payload
@@ -28,11 +38,11 @@ export const sendContactEmail = async (data) => {
     subject: `${data.category} - ${data.subject}`,
     html: `
       <h3>PrepEdge AI: New Message</h3>
-      <p><strong>Name:</strong> ${data.name}</p>
-      <p><strong>Email:</strong> ${data.email}</p>
-      <p><strong>Category:</strong> ${data.category}</p>
+      <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+      <p><strong>Category:</strong> ${escapeHtml(data.category)}</p>
       <p><strong>Message:</strong></p>
-      <p>${data.message}</p>
+      <p>${escapeHtml(data.message)}</p>
     `,
   });
 };
