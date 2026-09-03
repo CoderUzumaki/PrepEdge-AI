@@ -9,6 +9,7 @@ import {
   validateAnswerOutput,
   validateQuestionsOutput,
   validateResumeSummaryOutput,
+  validateInterviewSummaryOutput,
 } from "../providers/ai/validateOutput.js";
 import { parseJsonResponse } from "../providers/ai/parseJson.js";
 import { AppError, ERROR_CODES } from "@prepedge/shared";
@@ -112,6 +113,42 @@ describe("validateResumeSummaryOutput", () => {
     const { summary } = validateResumeSummaryOutput({ summary: "Experienced engineer." });
     expect(summary).toBe("Experienced engineer.");
   });
+
+  it("accepts nested summary objects from Groq-style responses", () => {
+    const { summary } = validateResumeSummaryOutput({
+      summary: {
+        Education: "B.Tech CS, IIT",
+        Skills: "Node.js, React",
+      },
+    });
+    expect(summary).toContain("Education");
+    expect(summary).toContain("B.Tech CS, IIT");
+    expect(summary).toContain("Node.js, React");
+  });
+});
+
+describe("validateInterviewSummaryOutput", () => {
+  it("accepts string fields", () => {
+    const result = validateInterviewSummaryOutput({
+      summary: "Solid performance overall.",
+      strengths: "Clear communication.",
+      areaOfImprovement: "Add more system design depth.",
+    });
+    expect(result.summary).toBe("Solid performance overall.");
+    expect(result.strengths).toBe("Clear communication.");
+    expect(result.areaOfImprovement).toBe("Add more system design depth.");
+  });
+
+  it("accepts nested object fields from Groq-style responses", () => {
+    const result = validateInterviewSummaryOutput({
+      summary: { overall: "Good technical depth." },
+      strengths: { communication: "Explained trade-offs well." },
+      area_of_improvement: { depth: "More distributed systems examples." },
+    });
+    expect(result.summary).toContain("Good technical depth.");
+    expect(result.strengths).toContain("Explained trade-offs well.");
+    expect(result.areaOfImprovement).toContain("distributed systems");
+  });
 });
 
 describe("parseJsonResponse failures", () => {
@@ -149,5 +186,19 @@ describe("toAiAppError", () => {
     const { toAiAppError } = await import("../providers/ai/aiErrors.js");
     const original = AppError.fromCode(ERROR_CODES.GUARDRAIL_VIOLATION, "blocked");
     expect(toAiAppError(original)).toBe(original);
+  });
+
+  it("maps resume summary validation failures to invalid response", async () => {
+    const { toAiAppError } = await import("../providers/ai/aiErrors.js");
+    const err = toAiAppError(new Error("Invalid resume summary from AI"));
+    expect(err.code).toBe(ERROR_CODES.UPSTREAM_FAILURE);
+    expect(err.message).toContain("invalid response");
+  });
+
+  it("maps interview summary validation failures to invalid response", async () => {
+    const { toAiAppError } = await import("../providers/ai/aiErrors.js");
+    const err = toAiAppError(new Error("Invalid interview summary field from AI"));
+    expect(err.code).toBe(ERROR_CODES.UPSTREAM_FAILURE);
+    expect(err.message).toContain("invalid response");
   });
 });

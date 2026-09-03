@@ -3,6 +3,8 @@
  * @description Schema validation for AI JSON responses before returning to services.
  */
 
+import { normalizeAiText } from "./parseJson.js";
+
 const MAX_FEEDBACK_LENGTH = 2000;
 const MAX_TAGS = 20;
 const MAX_TAG_LENGTH = 100;
@@ -45,8 +47,8 @@ export function validateResumeSummaryOutput(parsed) {
   if (!parsed || typeof parsed !== "object") {
     throw new Error("Invalid AI resume summary output");
   }
-  const summary = parsed.summary;
-  if (typeof summary !== "string" || !summary.trim()) {
+  const summary = normalizeAiText(parsed.summary, "");
+  if (!summary.trim()) {
     throw new Error("Invalid resume summary from AI");
   }
   return { summary: summary.trim().slice(0, 8000) };
@@ -87,10 +89,11 @@ export function validateInterviewSummaryOutput(parsed) {
   }
 
   const pick = (value, max = 4000) => {
-    if (typeof value !== "string" || !value.trim()) {
+    const text = normalizeAiText(value, "");
+    if (!text.trim()) {
       throw new Error("Invalid interview summary field from AI");
     }
-    return value.trim().slice(0, max);
+    return text.trim().slice(0, max);
   };
 
   return {

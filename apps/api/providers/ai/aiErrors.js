@@ -14,6 +14,8 @@ export function toAiAppError(err) {
     message.includes("Invalid score") ||
     message.includes("Invalid feedback") ||
     message.includes("Invalid AI") ||
+    message.includes("Invalid resume summary") ||
+    message.includes("Invalid interview summary") ||
     message.includes("No questions") ||
     message.includes("No valid questions")
   ) {
