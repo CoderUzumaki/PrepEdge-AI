@@ -14,7 +14,7 @@ export const groqComplete = async ({ system, user, maxTokens = 500 }) => {
   if (!groq) throw new Error("Groq not configured");
 
   const response = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "qwen/qwen3.8-27b",
     messages: [
       { role: "system", content: system },
       { role: "user", content: user },
