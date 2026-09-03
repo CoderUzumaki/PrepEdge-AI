@@ -14,7 +14,7 @@ export const geminiComplete = async ({ system, user, maxTokens = 500 }) => {
   if (!genAI) throw new Error("Gemini not configured");
 
   const model = genAI.getGenerativeModel({
-    model: "gemini-3.5-flash",
+    model: "gemini-2.5-flash",
     generationConfig: {
       maxOutputTokens: maxTokens,
       temperature: 0.3,
